@@ -105,7 +105,7 @@ churn metrics:
     - echo ${WPDESK_CI_VERSION}
     - composer require bmitch/churn-php
     - composer update --no-progress
-    - vendor/bin/churn run classes inc
+    - vendor/bin/churn run src
 
 unit test lastest:
   <<: *job-test-unit-template-fast
