@@ -1,14 +1,14 @@
 <?php
 
-if ( ! interface_exists( 'WPDesk_Translable' ) ) {
-	require_once 'Translable.php';
+if ( ! interface_exists( 'WPDesk_Translatable' ) ) {
+	require_once 'Translatable.php';
 }
 
 /**
  * Checks requirements for plugin
  * have to be compatible with PHP 5.2.x
  */
-class WPDesk_Basic_Requirement_Checker implements WPDesk_Translable {
+class WPDesk_Basic_Requirement_Checker implements WPDesk_Translatable {
 	const EXTENSION_NAME_OPENSSL = 'openssl';
 	const HOOK_ADMIN_NOTICES_ACTION = 'admin_notices';
 
