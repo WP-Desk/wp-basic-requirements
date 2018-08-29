@@ -162,9 +162,6 @@ class Test_Basic_Requirement_Checker extends PHPUnit\Framework\TestCase {
 		$this->assertFalse( $requirements->are_requirements_met() );
 		$requirements->disable_plugin_render_notice();
 
-		WP_Mock::wpFunction( 'deactivate_plugins' )
-		       ->once();
-
 		WP_Mock::wpFunction( 'plugin_basename' )
 		       ->once()
 		       ->andReturn( 'whatever' );
