@@ -170,7 +170,6 @@ class Test_Basic_Requirement_Checker extends PHPUnit\Framework\TestCase {
 		       ->andReturn( 'whatever' );
 
 		$this->expectOutputRegex( '/cannot run on PHP/' );
-		$requirements->deactivate_action();
 		$requirements->render_notices_action();
 	}
 }
