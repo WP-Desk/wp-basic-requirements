@@ -340,19 +340,52 @@ class WPDesk_Basic_Requirement_Checker implements WPDesk_Translable {
 	 * @return bool
 	 */
 	public static function is_setting_set( $name, $value ) {
-		return ini_get( $name ) === strval( $value );
+		return ini_get( $name ) === (string) $value;
 	}
 
 	/**
 	 * @return void
+     *
+     * @deprecated use render_notices or disable_plugin
 	 */
 	public function disable_plugin_render_notice() {
 		add_action( self::HOOK_ADMIN_NOTICES_ACTION, array( $this, 'render_notices_action' ) );
 	}
 
+    /**
+     * Renders requirement notices in admin panel
+     *
+     * @return void
+     */
+    public function render_notices() {
+        add_action( self::HOOK_ADMIN_NOTICES_ACTION, array( $this, 'render_notices_action' ) );
+    }
+
+    /**
+     * Renders requirement notices in admin panel
+     *
+     * @return void
+     */
+    public function disable_plugin() {
+        add_action( self::HOOK_ADMIN_NOTICES_ACTION, array( $this, 'deactivate_action' ) );
+    }
+
+    /**
+     * @internal Do not use as public. Public only for wp action.
+     *
+     * @return void
+     */
+    public function deactivate_action() {
+        if ( isset( $this->plugin_file ) ) {
+            deactivate_plugins( plugin_basename( $this->plugin_file ) );
+        }
+    }
+
 	/**
-	 * Shoud be called as WordPress action
+	 * Should be called as WordPress action
 	 *
+     * @internal Do not use as public. Public only for wp action.
+     *
 	 * @return void
 	 */
 	public function render_notices_action() {
