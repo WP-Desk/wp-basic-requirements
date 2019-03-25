@@ -46,7 +46,7 @@ class Test_Basic_Requirement_Checker extends PHPUnit\Framework\TestCase {
 		$requirements->set_min_php_require( self::ALWAYS_NOT_VALID_PHP_VERSION );
 		$requirements->are_requirements_met();
 		$this->expectOutputRegex( "/PHP/" );
-		$requirements->render_notices_action();
+		$requirements->handle_render_notices_action();
 	}
 
 	/**
@@ -73,7 +73,7 @@ class Test_Basic_Requirement_Checker extends PHPUnit\Framework\TestCase {
 			'Should fail because required WP should be at least ' . $wp_version_fail );
 
 		$this->expectOutputRegex( "/WordPress/" );
-		$requirements->render_notices_action();
+		$requirements->handle_render_notices_action();
 	}
 
 	/**
@@ -88,7 +88,7 @@ class Test_Basic_Requirement_Checker extends PHPUnit\Framework\TestCase {
 		$this->assertTrue( $requirements->are_requirements_met(), 'Curl should exists' );
 
 		$this->expectOutputRegex( "/^$/" );
-		$requirements->render_notices_action();
+		$requirements->handle_render_notices_action();
 	}
 
 	public function test_plugin_check_with_multisite() {
@@ -122,7 +122,7 @@ class Test_Basic_Requirement_Checker extends PHPUnit\Framework\TestCase {
 		$this->assertFalse( $requirements->are_requirements_met(), 'Plugin should not exists' );
 
 		$this->expectOutputRegex( "/$not_existing_plugin_name/" );
-		$requirements->render_notices_action();
+		$requirements->handle_render_notices_action();
 	}
 
 	/**
@@ -147,7 +147,7 @@ class Test_Basic_Requirement_Checker extends PHPUnit\Framework\TestCase {
 			'Requirement OpenSSL should fail for that high number' );
 
 		$this->expectOutputRegex( '/without OpenSSL module/' );
-		$requirements->render_notices_action();
+		$requirements->handle_render_notices_action();
 	}
 
 	public function test_deactivate_plugin_notice() {
@@ -155,13 +155,13 @@ class Test_Basic_Requirement_Checker extends PHPUnit\Framework\TestCase {
 			self::ALWAYS_VALID_WP_VERSION );
 
 		WP_Mock::expectActionAdded( WPDesk_Basic_Requirement_Checker::HOOK_ADMIN_NOTICES_ACTION,
-			[ $requirements, 'render_notices_action' ] );
+			[ $requirements, 'handle_render_notices_action'] );
 
 		$this->assertFalse( $requirements->are_requirements_met() );
 		$requirements->disable_plugin();
         $requirements->render_notices();
 
 		$this->expectOutputRegex( '/cannot run on PHP/' );
-		$requirements->render_notices_action();
+		$requirements->handle_render_notices_action();
 	}
 }
