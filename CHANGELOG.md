@@ -1,4 +1,4 @@
-## [2.3.0] - 2019-03-25
+## [2.3.1] - 2019-03-25
 ### Fixed
 - Backward compatibility
 
