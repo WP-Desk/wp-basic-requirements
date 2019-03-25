@@ -4,11 +4,16 @@ if ( ! interface_exists( 'WPDesk_Translatable' ) ) {
 	require_once 'Translatable.php';
 }
 
+if ( ! interface_exists( 'WPDesk_Requirement_Checker' ) ) {
+	require_once 'Requirement_Checker.php';
+}
+
 /**
  * Checks requirements for plugin
  * have to be compatible with PHP 5.2.x
  */
-class WPDesk_Basic_Requirement_Checker implements WPDesk_Translatable {
+class WPDesk_Basic_Requirement_Checker implements WPDesk_Translatable, WPDesk_Requirement_Checker
+{
 	const EXTENSION_NAME_OPENSSL = 'openssl';
 	const HOOK_ADMIN_NOTICES_ACTION = 'admin_notices';
 
@@ -349,7 +354,7 @@ class WPDesk_Basic_Requirement_Checker implements WPDesk_Translatable {
      * @deprecated use render_notices or disable_plugin
 	 */
 	public function disable_plugin_render_notice() {
-		add_action( self::HOOK_ADMIN_NOTICES_ACTION, array( $this, 'render_notices_action' ) );
+		add_action( self::HOOK_ADMIN_NOTICES_ACTION, array( $this, 'handle_render_notices_action') );
 	}
 
     /**
@@ -358,7 +363,7 @@ class WPDesk_Basic_Requirement_Checker implements WPDesk_Translatable {
      * @return void
      */
     public function render_notices() {
-        add_action( self::HOOK_ADMIN_NOTICES_ACTION, array( $this, 'render_notices_action' ) );
+        add_action( self::HOOK_ADMIN_NOTICES_ACTION, array( $this, 'handle_render_notices_action') );
     }
 
     /**
@@ -367,7 +372,7 @@ class WPDesk_Basic_Requirement_Checker implements WPDesk_Translatable {
      * @return void
      */
     public function disable_plugin() {
-        add_action( self::HOOK_ADMIN_NOTICES_ACTION, array( $this, 'deactivate_action' ) );
+        add_action( self::HOOK_ADMIN_NOTICES_ACTION, array( $this, 'handle_deactivate_action') );
     }
 
     /**
@@ -375,22 +380,22 @@ class WPDesk_Basic_Requirement_Checker implements WPDesk_Translatable {
      *
      * @return void
      */
-    public function deactivate_action() {
+    public function handle_deactivate_action() {
         if ( isset( $this->plugin_file ) ) {
             deactivate_plugins( plugin_basename( $this->plugin_file ) );
         }
     }
 
-	/**
-	 * Should be called as WordPress action
-	 *
+    /**
+     * Should be called as WordPress action
+     *
      * @internal Do not use as public. Public only for wp action.
      *
-	 * @return void
-	 */
-	public function render_notices_action() {
-		foreach ( $this->notices as $notice ) {
-			echo $notice;
-		}
-	}
+     * @return void
+     */
+    public function handle_render_notices_action() {
+        foreach ( $this->notices as $notice ) {
+            echo $notice;
+        }
+    }
 }
