@@ -34,6 +34,9 @@ class WPDesk_Plugin_Info implements WPDesk_Translatable, WPDesk_Buildable, WPDes
 	/** @var string */
 	private $product_id;
 
+	/** @var string */
+	private $plugin_name;
+
 	/** @var \DateTimeInterface */
 	private $release_date;
 
@@ -111,6 +114,20 @@ class WPDesk_Plugin_Info implements WPDesk_Translatable, WPDesk_Buildable, WPDes
 	}
 
 	/**
+	 * @return string
+	 */
+	public function get_plugin_name() {
+		return $this->plugin_name;
+	}
+
+	/**
+	 * @param string $plugin_name
+	 */
+	public function set_plugin_name( $plugin_name ) {
+		$this->plugin_name = $plugin_name;
+	}
+
+	/**
 	 * @return DateTimeInterface
 	 */
 	public function get_release_date() {
@@ -148,7 +165,7 @@ class WPDesk_Plugin_Info implements WPDesk_Translatable, WPDesk_Buildable, WPDes
 	/**
 	 * @param $value
 	 */
-	public function set_text_domain($value) {
+	public function set_text_domain( $value ) {
 		$this->text_domain = $value;
 	}
 }
