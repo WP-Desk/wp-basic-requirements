@@ -27,7 +27,7 @@ class Test_Basic_Requirement_Checker extends PHPUnit\Framework\TestCase {
 	}
 
 	public function test_php_version_check() {
-		$known_PHP_versions = [ '7.3', '7.2', '7.1', '7.0', '5.6', '5.5', '5.4', '5.3', '5.2' ];
+		$known_PHP_versions = array( '7.3', '7.2', '7.1', '7.0', '5.6', '5.5', '5.4', '5.3', '5.2' );
 
 		$requirements = $this->create_requirements_for_php_wp(
 			self::ALWAYS_VALID_PHP_VERSION,
@@ -55,7 +55,7 @@ class Test_Basic_Requirement_Checker extends PHPUnit\Framework\TestCase {
 	 *
 	 * @return WPDesk_Basic_Requirement_Checker
 	 */
-	public function create_requirements_for_php_wp( $php, $wp ) {
+	private function create_requirements_for_php_wp( $php, $wp ) {
 		return new WPDesk_Basic_Requirement_Checker( self::RANDOM_PLUGIN_FILE, self::RANDOM_PLUGIN_NAME,
 			self::RANDOM_PLUGIN_TEXTDOMAIN, $php, $wp );
 	}
@@ -98,15 +98,15 @@ class Test_Basic_Requirement_Checker extends PHPUnit\Framework\TestCase {
 		$not_existing_plugin_name      = 'Not exist';
 
 		WP_Mock::wpFunction( 'get_option' )
-		       ->withArgs( [ 'active_plugins', [] ] )
-		       ->andReturn( [ $exising_plugin_name ] );
+		       ->withArgs( array( 'active_plugins', array() ) )
+		       ->andReturn( array( $exising_plugin_name ) );
 
 		WP_Mock::wpFunction( 'is_multisite' )
 		       ->andReturn( $multisite );
 
 		WP_Mock::wpFunction( 'get_site_option' )
-		       ->withArgs( [ 'active_sitewide_plugins', [] ] )
-		       ->andReturn( [ $exising_multisite_plugin_name ] );
+		       ->withArgs( array( 'active_sitewide_plugins', array() ) )
+		       ->andReturn( array( $exising_multisite_plugin_name ) );
 
 
 		$requirements = $this->create_requirements_for_php_wp( self::ALWAYS_VALID_PHP_VERSION,
@@ -155,13 +155,53 @@ class Test_Basic_Requirement_Checker extends PHPUnit\Framework\TestCase {
 			self::ALWAYS_VALID_WP_VERSION );
 
 		WP_Mock::expectActionAdded( WPDesk_Basic_Requirement_Checker::HOOK_ADMIN_NOTICES_ACTION,
-			[ $requirements, 'handle_render_notices_action'] );
+			array( $requirements, 'handle_render_notices_action' ) );
 
 		$this->assertFalse( $requirements->are_requirements_met() );
 		$requirements->disable_plugin();
-        $requirements->render_notices();
+		$requirements->render_notices();
 
 		$this->expectOutputRegex( '/cannot run on PHP/' );
+		$requirements->handle_render_notices_action();
+	}
+
+	public function test_add_plugin_repository_require_checks_for_activation_and_installs() {
+		$random_version            = "1.0";
+		$activated_plugin_name     = 'WooCommerce';
+		$not_activated_plugin_name = "some_other";
+		$not_installed_plugin_name = "not_installed";
+		$installed_plugin_names    = array( $activated_plugin_name, $not_activated_plugin_name );
+
+
+		WP_Mock::wpFunction( 'get_plugins' )
+		       ->andReturn( array_flip( $installed_plugin_names ) );
+
+		WP_Mock::wpFunction( 'get_option' )
+		       ->withArgs( array( 'active_plugins', array() ) )
+		       ->andReturn( array( $activated_plugin_name ) );
+
+		WP_Mock::passthruFunction( 'self_admin_url' );
+		WP_Mock::passthruFunction( 'wp_kses' );
+		WP_Mock::passthruFunction( 'wp_nonce_url' );
+		WP_Mock::passthruFunction( 'wp_create_nonce' );
+		WP_Mock::passthruFunction( 'admin_url' );
+
+		$requirements = $this->create_requirements_for_php_wp( self::ALWAYS_VALID_PHP_VERSION,
+			self::ALWAYS_VALID_WP_VERSION );
+
+		$requirements->add_plugin_repository_require( $activated_plugin_name, $random_version );
+		$this->assertTrue( $requirements->are_requirements_met(), "Should be met for activated plugin" );
+
+		$requirements->add_plugin_repository_require( $not_activated_plugin_name, $random_version );
+		$this->assertFalse( $requirements->are_requirements_met(), "Should NOT be met for only installed plugin" );
+
+		$this->expectOutputRegex( "/Activate $not_activated_plugin_name/" );
+		$requirements->handle_render_notices_action();
+
+		$requirements->add_plugin_repository_require( $not_installed_plugin_name, $random_version );
+		$this->expectOutputRegex( "/Install $not_installed_plugin_name/" );
+		$this->assertFalse( $requirements->are_requirements_met(),
+			"Should NOT be met - uninstalled and unactive plugins are required" );
 		$requirements->handle_render_notices_action();
 	}
 }

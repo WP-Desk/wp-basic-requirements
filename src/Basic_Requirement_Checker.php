@@ -1,403 +1,503 @@
 <?php
 
-if ( ! interface_exists( 'WPDesk_Translatable' ) ) {
-	require_once 'Translatable.php';
-}
-
 if ( ! interface_exists( 'WPDesk_Requirement_Checker' ) ) {
 	require_once 'Requirement_Checker.php';
 }
 
-if (! class_exists('WPDesk_Basic_Requirement_Checker') ) {
-    /**
-     * Checks requirements for plugin
-     * have to be compatible with PHP 5.2.x
-     */
-    class WPDesk_Basic_Requirement_Checker implements WPDesk_Translatable, WPDesk_Requirement_Checker
-    {
-        const EXTENSION_NAME_OPENSSL = 'openssl';
-        const HOOK_ADMIN_NOTICES_ACTION = 'admin_notices';
+if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
+	/**
+	 * Checks requirements for plugin
+	 * have to be compatible with PHP 5.3.x
+	 */
+	class WPDesk_Basic_Requirement_Checker implements WPDesk_Requirement_Checker {
+		const EXTENSION_NAME_OPENSSL = 'openssl';
+		const HOOK_ADMIN_NOTICES_ACTION = 'admin_notices';
 
-        /** @var string */
-        private $plugin_name;
-        /** @var string */
-        private $plugin_file;
-        /** @var string */
-        private $min_php_version;
-        /** @var string */
-        private $min_wp_version;
-        /** @var string|null */
-        private $min_wc_version = null;
-        /** @var int|null */
-        private $min_openssl_version = null;
-        /** @var array */
-        private $plugin_require;
-        /** @var array */
-        private $module_require;
-        /** @var array */
-        private $setting_require;
-        /** @var array */
-        private $notices;
-        /** @var @string */
-        private $text_domain;
+		const PLUGIN_INFO_KEY_NICE_NAME = 'nice_name';
+		const PLUGIN_INFO_KEY_NAME = 'name';
 
-        /**
-         * @param string $plugin_file
-         * @param string $plugin_name
-         * @param string $text_domain
-         * @param string $php_version
-         * @param string $wp_version
-         */
-        public function __construct( $plugin_file, $plugin_name, $text_domain, $php_version, $wp_version ) {
-            $this->plugin_file = $plugin_file;
-            $this->plugin_name = $plugin_name;
-            $this->text_domain = $text_domain;
+		/** @var string */
+		protected $plugin_name;
+		/** @var string */
+		private $plugin_file;
+		/** @var string */
+		private $min_php_version;
+		/** @var string */
+		private $min_wp_version;
+		/** @var string|null */
+		private $min_wc_version = null;
+		/** @var int|null */
+		private $min_openssl_version = null;
+		/** @var array */
+		protected $plugin_require;
+		/** @var array */
+		private $module_require;
+		/** @var array */
+		private $setting_require;
+		/** @var array */
+		protected $notices;
+		/** @var @string */
+		private $text_domain;
 
-            $this->set_min_php_require( $php_version );
-            $this->set_min_wp_require( $wp_version );
+		/**
+		 * @param string $plugin_file
+		 * @param string $plugin_name
+		 * @param string $text_domain
+		 * @param string $php_version
+		 * @param string $wp_version
+		 */
+		public function __construct( $plugin_file, $plugin_name, $text_domain, $php_version, $wp_version ) {
+			$this->plugin_file = $plugin_file;
+			$this->plugin_name = $plugin_name;
+			$this->text_domain = $text_domain;
 
-            $this->plugin_require  = array();
-            $this->module_require  = array();
-            $this->setting_require = array();
-            $this->notices         = array();
-        }
+			$this->set_min_php_require( $php_version );
+			$this->set_min_wp_require( $wp_version );
 
-        /**
-         * @param string $version
-         *
-         * @return $this
-         */
-        public function set_min_php_require( $version ) {
-            $this->min_php_version = $version;
+			$this->plugin_require  = array();
+			$this->module_require  = array();
+			$this->setting_require = array();
+			$this->notices         = array();
+		}
 
-            return $this;
-        }
+		/**
+		 * @param string $version
+		 *
+		 * @return $this
+		 */
+		public function set_min_php_require( $version ) {
+			$this->min_php_version = $version;
 
-        /**
-         * @param string $version
-         *
-         * @return $this
-         */
-        public function set_min_wp_require( $version ) {
-            $this->min_wp_version = $version;
+			return $this;
+		}
 
-            return $this;
-        }
+		/**
+		 * @param string $version
+		 *
+		 * @return $this
+		 */
+		public function set_min_wp_require( $version ) {
+			$this->min_wp_version = $version;
 
-        /**
-         * @param string $version
-         *
-         * @return $this
-         */
-        public function set_min_wc_require( $version ) {
-            $this->min_wc_version = $version;
+			return $this;
+		}
 
-            return $this;
-        }
+		/**
+		 * @param string $version
+		 *
+		 * @return $this
+		 */
+		public function set_min_wc_require( $version ) {
+			$this->min_wc_version = $version;
 
-        /**
-         * @param $version
-         *
-         * @return $this
-         */
-        public function set_min_openssl_require( $version ) {
-            $this->min_openssl_version = $version;
+			return $this;
+		}
 
-            return $this;
-        }
+		/**
+		 * @param $version
+		 *
+		 * @return $this
+		 */
+		public function set_min_openssl_require( $version ) {
+			$this->min_openssl_version = $version;
 
-        /**
-         * @param string $plugin_name
-         * @param string $nice_plugin_name Nice plugin name for better looks in notice
-         *
-         * @return $this
-         */
-        public function add_plugin_require( $plugin_name, $nice_plugin_name = null ) {
-            if ( $nice_plugin_name === null ) {
-                $this->plugin_require[ $plugin_name ] = $plugin_name;
-            } else {
-                $this->plugin_require[ $plugin_name ] = $nice_plugin_name;
-            }
+			return $this;
+		}
 
-            return $this;
-        }
+		/**
+		 * @param string $plugin_name Name in wp format dir/file.php
+		 * @param string $nice_plugin_name Nice plugin name for better looks in notice
+		 *
+		 * @return $this
+		 */
+		public function add_plugin_require( $plugin_name, $nice_plugin_name = null ) {
+			$this->plugin_require[ $plugin_name ] = array(
+				self::PLUGIN_INFO_KEY_NAME      => $plugin_name,
+				self::PLUGIN_INFO_KEY_NICE_NAME => $nice_plugin_name === null ? $plugin_name : $nice_plugin_name
+			);
 
-        /**
-         * @param string $module_name
-         * @param string $nice_name Nice module name for better looks in notice
-         *
-         * @return $this
-         */
-        public function add_php_module_require( $module_name, $nice_name = null ) {
-            if ( $nice_name === null ) {
-                $this->module_require[ $module_name ] = $module_name;
-            } else {
-                $this->module_require[ $module_name ] = $nice_name;
-            }
+			return $this;
+		}
 
-            return $this;
-        }
+		/**
+		 * Add plugin to require list. Plugin is from repository so we can ask for installation.
+		 *
+		 * @param string $plugin_name Name in wp format dir/file.php
+		 * @param string $version Required version of the plugin.
+		 * @param string $nice_plugin_name Nice plugin name for better looks in notice
+		 *
+		 * @return $this
+		 */
+		public function add_plugin_repository_require( $plugin_name, $version, $nice_plugin_name = null ) {
+			$this->plugin_require[ $plugin_name ] = array(
+				self::PLUGIN_INFO_KEY_NAME      => $plugin_name,
+				'version'                       => $version,
+				'repository_url'                => 'http://downloads.wordpress.org/plugin/' . dirname( $plugin_name ) . '.latest-stable.zip',
+				self::PLUGIN_INFO_KEY_NICE_NAME => $nice_plugin_name === null ? $plugin_name : $nice_plugin_name
+			);
 
-        /**
-         * @param string $setting
-         * @param mixed $value
-         *
-         * @return $this
-         */
-        public function add_php_setting_require( $setting, $value ) {
-            $this->setting_require[ $setting ] = $value;
+			return $this;
+		}
 
-            return $this;
-        }
+		/**
+		 * @param string $module_name
+		 * @param string $nice_name Nice module name for better looks in notice
+		 *
+		 * @return $this
+		 */
+		public function add_php_module_require( $module_name, $nice_name = null ) {
+			if ( $nice_name === null ) {
+				$this->module_require[ $module_name ] = $module_name;
+			} else {
+				$this->module_require[ $module_name ] = $nice_name;
+			}
 
-        /**
-         * @return bool
-         */
-        public function are_requirements_met() {
-            $this->notices = $this->prepare_requirement_notices();
+			return $this;
+		}
 
-            return count( $this->notices ) === 0;
-        }
+		/**
+		 * @param string $setting
+		 * @param mixed $value
+		 *
+		 * @return $this
+		 */
+		public function add_php_setting_require( $setting, $value ) {
+			$this->setting_require[ $setting ] = $value;
 
-        /**
-         * @return array
-         */
-        private function prepare_requirement_notices() {
-            $notices = array();
-            if ( ! self::is_php_at_least( $this->min_php_version ) ) {
-                $notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin cannot run on PHP versions older than %s. Please contact your host and ask them to upgrade.',
-                    $this->get_text_domain() ), esc_html( $this->plugin_name ), $this->min_php_version ) );
-            }
-            if ( ! self::is_wp_at_least( $this->min_wp_version ) ) {
-                $notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin cannot run on WordPress versions older than %s. Please update WordPress.',
-                    $this->get_text_domain() ), esc_html( $this->plugin_name ), $this->min_wp_version ) );
-            }
-            if ( $this->min_wc_version !== null && $this->can_check_plugin_version() && ! self::is_wc_at_least( $this->min_wc_version ) ) {
-                $notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin cannot run on WooCommerce versions older than %s. Please update WooCommerce.',
-                    $this->get_text_domain() ), esc_html( $this->plugin_name ), $this->min_wc_version ) );
-            }
-            if ( $this->min_openssl_version !== null && ! self::is_open_ssl_at_least( $this->min_openssl_version ) ) {
-                $notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin cannot run without OpenSSL module version at least %s. Please update OpenSSL module.',
-                    $this->get_text_domain() ), esc_html( $this->plugin_name ),
-                    '0x' . dechex( $this->min_openssl_version ) ) );
-            }
+			return $this;
+		}
 
-            $notices = $this->append_plugin_require_notices( $notices );
-            $notices = $this->append_module_require_notices( $notices );
-            $notices = $this->append_settings_require_notices( $notices );
+		/**
+		 * Returns true if are requirements are met.
+		 *
+		 * @return bool
+		 */
+		public function are_requirements_met() {
+			$this->notices = $this->prepare_requirement_notices();
 
-            return $notices;
-        }
+			return count( $this->notices ) === 0;
+		}
 
-        /**
-         * @param $min_version
-         *
-         * @return mixed
-         */
-        public static function is_php_at_least( $min_version ) {
-            return version_compare( PHP_VERSION, $min_version, '>=' );
-        }
+		/**
+		 * @return array
+		 */
+		private function prepare_requirement_notices() {
+			$notices = array();
+			if ( ! self::is_php_at_least( $this->min_php_version ) ) {
+				$notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin cannot run on PHP versions older than %s. Please contact your host and ask them to upgrade.',
+					$this->get_text_domain() ), esc_html( $this->plugin_name ), $this->min_php_version ) );
+			}
+			if ( ! self::is_wp_at_least( $this->min_wp_version ) ) {
+				$notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin cannot run on WordPress versions older than %s. Please update WordPress.',
+					$this->get_text_domain() ), esc_html( $this->plugin_name ), $this->min_wp_version ) );
+			}
+			if ( $this->min_wc_version !== null && $this->can_check_plugin_version() && ! self::is_wc_at_least( $this->min_wc_version ) ) {
+				$notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin cannot run on WooCommerce versions older than %s. Please update WooCommerce.',
+					$this->get_text_domain() ), esc_html( $this->plugin_name ), $this->min_wc_version ) );
+			}
+			if ( $this->min_openssl_version !== null && ! self::is_open_ssl_at_least( $this->min_openssl_version ) ) {
+				$notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin cannot run without OpenSSL module version at least %s. Please update OpenSSL module.',
+					$this->get_text_domain() ), esc_html( $this->plugin_name ),
+					'0x' . dechex( $this->min_openssl_version ) ) );
+			}
 
-        /**
-         * Prepares message in html format
-         *
-         * @param string $message
-         *
-         * @return string
-         */
-        private function prepare_notice_message( $message ) {
-            return '<div class="error"><p>' . $message . '</p></div>';
-        }
+			$notices = $this->append_plugin_require_notices( $notices );
+			$notices = $this->append_module_require_notices( $notices );
+			$notices = $this->append_settings_require_notices( $notices );
 
-        public function get_text_domain() {
-            return $this->text_domain;
-        }
+			return $notices;
+		}
 
-        /**
-         * @param string $min_version
-         *
-         * @return bool
-         */
-        public static function is_wp_at_least( $min_version ) {
-            return version_compare( get_bloginfo( 'version' ), $min_version, '>=' );
-        }
+		/**
+		 * @param $min_version
+		 *
+		 * @return mixed
+		 */
+		public static function is_php_at_least( $min_version ) {
+			return version_compare( PHP_VERSION, $min_version, '>=' );
+		}
 
-        /**
-         * Are plugins loaded so we can check the version
-         *
-         * @return bool
-         */
-        private function can_check_plugin_version() {
-            return did_action( 'plugins_loaded' ) > 0;
-        }
+		/**
+		 * Prepares message in html format
+		 *
+		 * @param string $message
+		 *
+		 * @return string
+		 */
+		private function prepare_notice_message( $message ) {
+			return '<div class="error"><p>' . $message . '</p></div>';
+		}
 
-        /**
-         * Checks if plugin is active and have designated version. Needs to be enabled in deferred way.
-         *
-         * @param string $min_version
-         *
-         * @return bool
-         */
-        public static function is_wc_at_least( $min_version ) {
-            return defined( 'WC_VERSION' ) &&
-                   version_compare( WC_VERSION, $min_version, '>=' );
-        }
+		public function get_text_domain() {
+			return $this->text_domain;
+		}
 
-        /**
-         * Checks if ssl version is valid
-         *
-         * @param int $required_version Version in hex. Version 9.6 is 0x000906000
-         *
-         * @see https://www.openssl.org/docs/man1.1.0/crypto/OPENSSL_VERSION_NUMBER.html
-         *
-         * @return bool
-         */
-        public static function is_open_ssl_at_least( $required_version ) {
-            return defined( 'OPENSSL_VERSION_NUMBER' ) && OPENSSL_VERSION_NUMBER > (int) $required_version;
-        }
+		/**
+		 * @param string $min_version
+		 *
+		 * @return bool
+		 */
+		public static function is_wp_at_least( $min_version ) {
+			return version_compare( get_bloginfo( 'version' ), $min_version, '>=' );
+		}
 
-        /**
-         * @param array $notices
-         *
-         * @return array
-         */
-        private function append_plugin_require_notices( $notices ) {
-            if ( count( $this->plugin_require ) > 0 ) {
-                foreach ( $this->plugin_require as $plugin_name => $nice_plugin_name ) {
-                    if ( ! self::is_wp_plugin_active( $plugin_name ) ) {
-                        $notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin cannot run without %s active. Please install and activate %s plugin.',
-                            $this->get_text_domain() ), esc_html( $this->plugin_name ),
-                            esc_html( basename( $nice_plugin_name ) ), esc_html( basename( $nice_plugin_name ) ) ) );
-                    }
-                }
-            }
+		/**
+		 * Are plugins loaded so we can check the version
+		 *
+		 * @return bool
+		 */
+		private function can_check_plugin_version() {
+			return did_action( 'plugins_loaded' ) > 0;
+		}
 
-            return $notices;
-        }
+		/**
+		 * Checks if plugin is active and have designated version. Needs to be enabled in deferred way.
+		 *
+		 * @param string $min_version
+		 *
+		 * @return bool
+		 */
+		public static function is_wc_at_least( $min_version ) {
+			return defined( 'WC_VERSION' ) &&
+			       version_compare( WC_VERSION, $min_version, '>=' );
+		}
 
-        /**
-         * Checks if plugin is active. Needs to be enabled in deferred way.
-         *
-         * @param string $plugin_file
-         *
-         * @return bool
-         */
-        public static function is_wp_plugin_active( $plugin_file ) {
-            $active_plugins = (array) get_option( 'active_plugins', array() );
+		/**
+		 * Checks if ssl version is valid
+		 *
+		 * @param int $required_version Version in hex. Version 9.6 is 0x000906000
+		 *
+		 * @return bool
+		 * @see https://www.openssl.org/docs/man1.1.0/crypto/OPENSSL_VERSION_NUMBER.html
+		 *
+		 */
+		public static function is_open_ssl_at_least( $required_version ) {
+			return defined( 'OPENSSL_VERSION_NUMBER' ) && OPENSSL_VERSION_NUMBER > (int) $required_version;
+		}
 
-            if ( is_multisite() ) {
-                $active_plugins = array_merge( $active_plugins, get_site_option( 'active_sitewide_plugins', array() ) );
-            }
+		/**
+		 * @param array $notices
+		 *
+		 * @return array
+		 */
+		private function append_plugin_require_notices( $notices ) {
+			if ( count( $this->plugin_require ) > 0 ) {
+				foreach ( $this->plugin_require as $plugin_name => $plugin_info ) {
+					$notice = null;
+					if ( isset( $plugin_info['repository_url'] ) ) {
+						$notice = $this->prepare_plugin_repository_require_notice( $plugin_info );
+					} elseif ( ! self::is_wp_plugin_active( $plugin_name ) ) {
+						$notice = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin cannot run without %s active. Please install and activate %s plugin.',
+							$this->get_text_domain() ), esc_html( $this->plugin_name ),
+							esc_html( basename( $plugin_info[ self::PLUGIN_INFO_KEY_NICE_NAME ] ) ),
+							esc_html( basename( $plugin_info[ self::PLUGIN_INFO_KEY_NICE_NAME ] ) ) ) );
+					}
 
-            return in_array( $plugin_file, $active_plugins ) || array_key_exists( $plugin_file, $active_plugins );
-        }
+					if ( $notice !== null ) {
+						$notices[] = $notice;
+					}
+				}
+			}
 
-        /**
-         * @param array $notices
-         *
-         * @return array
-         */
-        private function append_module_require_notices( $notices ) {
-            if ( count( $this->module_require ) > 0 ) {
-                foreach ( $this->module_require as $module_name => $nice_module_name ) {
-                    if ( ! self::is_module_active( $module_name ) ) {
-                        $notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin cannot run without %s php module installed. Please contact your host and ask them to install %s.',
-                            $this->get_text_domain() ), esc_html( $this->plugin_name ),
-                            esc_html( basename( $nice_module_name ) ), esc_html( basename( $nice_module_name ) ) ) );
-                    }
-                }
-            }
+			return $notices;
+		}
 
-            return $notices;
-        }
+		/**
+		 * Prepares WP install url and injects info about plugin to the WP update engine.
+		 *
+		 * @param array $plugin_info
+		 *
+		 * @return string
+		 */
+		private function prepare_plugin_repository_install_url( $plugin_info ) {
+			$slug        = basename( $plugin_info[ self::PLUGIN_INFO_KEY_NAME ] );
+			$install_url = wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=' . $slug ),
+				'install-plugin_' . $slug );
 
-        /**
-         * @param string $name
-         *
-         * @return bool
-         */
-        public static function is_module_active( $name ) {
-            return extension_loaded( $name );
-        }
+			add_filter( 'plugins_api', function ( $api, $action, $args ) use ( $plugin_info ) {
+				if ( 'plugin_information' !== $action ||
+				     false !== $api ||
+				     ! isset( $args->slug ) ||
+				     'wpdesk-helper' !== $args->slug
+				) {
+					return $api;
+				}
 
-        /**
-         * @param array $notices
-         *
-         * @return array
-         */
-        private function append_settings_require_notices( $notices ) {
-            if ( count( $this->setting_require ) > 0 ) {
-                foreach ( $this->setting_require as $setting => $value ) {
-                    if ( ! self::is_setting_set( $setting, $value ) ) {
-                        $notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin cannot run without %s php setting set to %s. Please contact your host and ask them to set %s.',
-                            $this->get_text_domain() ), esc_html( $this->plugin_name ), esc_html( basename( $setting ) ),
-                            esc_html( basename( $value ) ), esc_html( basename( $setting ) ) ) );
-                    }
-                }
-            }
+				$api                = new stdClass();
+				$api->name          = $plugin_info['nice_name']; // self in closures requires 5.4
+				$api->version       = $plugin_info['version']; // self in closures requires 5.4
+				$api->download_link = esc_url( $plugin_info['repository_url'] ); // self in closures requires 5.4
 
-            return $notices;
-        }
+				return $api;
+			}, 10, 3 );
 
-        /**
-         * @param string $name
-         * @param mixed $value
-         *
-         * @return bool
-         */
-        public static function is_setting_set( $name, $value ) {
-            return ini_get( $name ) === (string) $value;
-        }
+			return $install_url;
+		}
 
-        /**
-         * @return void
-         *
-         * @deprecated use render_notices or disable_plugin
-         */
-        public function disable_plugin_render_notice() {
-            add_action( self::HOOK_ADMIN_NOTICES_ACTION, array( $this, 'handle_render_notices_action') );
-        }
+		/**
+		 * @param array $plugin_info Internal required plugin info data.
+		 *
+		 * @return string|null Return null if no notice is needed.
+		 */
+		private function prepare_plugin_repository_require_notice( $plugin_info ) {
+			$name      = $plugin_info[ self::PLUGIN_INFO_KEY_NAME ];
+			$nice_name = $plugin_info[ self::PLUGIN_INFO_KEY_NICE_NAME ];
 
-        /**
-         * Renders requirement notices in admin panel
-         *
-         * @return void
-         */
-        public function render_notices() {
-            add_action( self::HOOK_ADMIN_NOTICES_ACTION, array( $this, 'handle_render_notices_action') );
-        }
+			if ( ! self::is_wp_plugin_installed( $name ) ) {
+				$install_url = $this->prepare_plugin_repository_install_url( $plugin_info );
 
-        /**
-         * Renders requirement notices in admin panel
-         *
-         * @return void
-         */
-        public function disable_plugin() {
-            add_action( self::HOOK_ADMIN_NOTICES_ACTION, array( $this, 'handle_deactivate_action') );
-        }
+				return sprintf( wp_kses( __( 'The &#8220;%s&#8221; plugin requires free %s plugin. <a href="%s">Install %s →</a>',
+					$this->get_text_domain() ), array( 'a' => array( 'href' => array() ) ) ),
+					$this->plugin_name, $nice_name, esc_url( $install_url ), $nice_name );
+			}
 
-        /**
-         * @internal Do not use as public. Public only for wp action.
-         *
-         * @return void
-         */
-        public function handle_deactivate_action() {
-            if ( isset( $this->plugin_file ) ) {
-                deactivate_plugins( plugin_basename( $this->plugin_file ) );
-            }
-        }
+			if ( ! self::is_wp_plugin_active( $name ) ) {
+				$activate_url = 'plugins.php?action=activate&plugin=' . urlencode( $plugin_info[ self::PLUGIN_INFO_KEY_NAME ] ) . '&plugin_status=all&paged=1&s&_wpnonce=' . urlencode( wp_create_nonce( 'activate-plugin_' . $name ) );
 
-        /**
-         * Should be called as WordPress action
-         *
-         * @internal Do not use as public. Public only for wp action.
-         *
-         * @return void
-         */
-        public function handle_render_notices_action() {
-            foreach ( $this->notices as $notice ) {
-                echo $notice;
-            }
-        }
-    }
+				return sprintf( wp_kses( __( 'The &#8220;%s&#8221; plugin requires activating %s plugin. <a href="%s">Activate %s →</a>',
+					$this->get_text_domain() ), array( 'a' => array( 'href' => array() ) ) ),
+					$this->plugin_name, $nice_name, esc_url( admin_url( $activate_url ) ), $nice_name );
+
+			}
+
+			return null;
+		}
+
+		/**
+		 * Checks if plugin is active. Needs to be used in deferred way.
+		 *
+		 * @param string $plugin_file
+		 *
+		 * @return bool
+		 */
+		public static function is_wp_plugin_active( $plugin_file ) {
+			$active_plugins = (array) get_option( 'active_plugins', array() );
+
+			if ( is_multisite() ) {
+				$active_plugins = array_merge( $active_plugins, get_site_option( 'active_sitewide_plugins', array() ) );
+			}
+
+			return in_array( $plugin_file, $active_plugins ) || array_key_exists( $plugin_file, $active_plugins );
+		}
+
+		/**
+		 * Checks if plugin is installed. Needs to be enabled in deferred way.
+		 *
+		 * @param string $plugin_file
+		 *
+		 * @return bool
+		 */
+		public static function is_wp_plugin_installed( $plugin_file ) {
+			return array_key_exists( $plugin_file, get_plugins() );
+		}
+
+		/**
+		 * @param array $notices
+		 *
+		 * @return array
+		 */
+		private function append_module_require_notices( $notices ) {
+			if ( count( $this->module_require ) > 0 ) {
+				foreach ( $this->module_require as $module_name => $nice_module_name ) {
+					if ( ! self::is_module_active( $module_name ) ) {
+						$notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin cannot run without %s php module installed. Please contact your host and ask them to install %s.',
+							$this->get_text_domain() ), esc_html( $this->plugin_name ),
+							esc_html( basename( $nice_module_name ) ), esc_html( basename( $nice_module_name ) ) ) );
+					}
+				}
+			}
+
+			return $notices;
+		}
+
+		/**
+		 * @param string $name
+		 *
+		 * @return bool
+		 */
+		public static function is_module_active( $name ) {
+			return extension_loaded( $name );
+		}
+
+		/**
+		 * @param array $notices
+		 *
+		 * @return array
+		 */
+		private function append_settings_require_notices( $notices ) {
+			if ( count( $this->setting_require ) > 0 ) {
+				foreach ( $this->setting_require as $setting => $value ) {
+					if ( ! self::is_setting_set( $setting, $value ) ) {
+						$notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin cannot run without %s php setting set to %s. Please contact your host and ask them to set %s.',
+							$this->get_text_domain() ), esc_html( $this->plugin_name ),
+							esc_html( basename( $setting ) ),
+							esc_html( basename( $value ) ), esc_html( basename( $setting ) ) ) );
+					}
+				}
+			}
+
+			return $notices;
+		}
+
+		/**
+		 * @param string $name
+		 * @param mixed $value
+		 *
+		 * @return bool
+		 */
+		public static function is_setting_set( $name, $value ) {
+			return ini_get( $name ) === (string) $value;
+		}
+
+		/**
+		 * @return void
+		 *
+		 * @deprecated use render_notices or disable_plugin
+		 */
+		public function disable_plugin_render_notice() {
+			add_action( self::HOOK_ADMIN_NOTICES_ACTION, array( $this, 'handle_render_notices_action' ) );
+		}
+
+		/**
+		 * Renders requirement notices in admin panel
+		 *
+		 * @return void
+		 */
+		public function render_notices() {
+			add_action( self::HOOK_ADMIN_NOTICES_ACTION, array( $this, 'handle_render_notices_action' ) );
+		}
+
+		/**
+		 * Renders requirement notices in admin panel
+		 *
+		 * @return void
+		 */
+		public function disable_plugin() {
+			add_action( self::HOOK_ADMIN_NOTICES_ACTION, array( $this, 'handle_deactivate_action' ) );
+		}
+
+		/**
+		 * @return void
+		 * @internal Do not use as public. Public only for wp action.
+		 *
+		 */
+		public function handle_deactivate_action() {
+			if ( isset( $this->plugin_file ) ) {
+				deactivate_plugins( plugin_basename( $this->plugin_file ) );
+			}
+		}
+
+		/**
+		 * Should be called as WordPress action
+		 *
+		 * @return void
+		 * @internal Do not use as public. Public only for wp action.
+		 *
+		 */
+		public function handle_render_notices_action() {
+			foreach ( $this->notices as $notice ) {
+				echo $notice;
+			}
+		}
+	}
 }
