@@ -2,6 +2,7 @@
 ### Fixed
 - Better new error messages display
 - get_plugins function loaded from wp-admin
+- Faster checks
 
 ## [3.0.0] - 2019-09-17
 ### Changed

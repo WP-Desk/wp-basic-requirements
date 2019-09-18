@@ -343,21 +343,19 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 			$name      = $plugin_info[ self::PLUGIN_INFO_KEY_NAME ];
 			$nice_name = $plugin_info[ self::PLUGIN_INFO_KEY_NICE_NAME ];
 
-			if ( ! self::is_wp_plugin_installed( $name ) ) {
-				$install_url = $this->prepare_plugin_repository_install_url( $plugin_info );
-
-				return $this->prepare_notice_message( sprintf( wp_kses( __( 'The &#8220;%s&#8221; plugin requires free %s plugin. <a href="%s">Install %s →</a>',
-					$this->get_text_domain() ), array( 'a' => array( 'href' => array() ) ) ),
-					$this->plugin_name, $nice_name, esc_url( $install_url ), $nice_name ) );
-			}
-
 			if ( ! self::is_wp_plugin_active( $name ) ) {
+				if ( ! self::is_wp_plugin_installed( $name ) ) {
+					$install_url = $this->prepare_plugin_repository_install_url( $plugin_info );
+
+					return $this->prepare_notice_message( sprintf( wp_kses( __( 'The &#8220;%s&#8221; plugin requires free %s plugin. <a href="%s">Install %s →</a>',
+						$this->get_text_domain() ), array( 'a' => array( 'href' => array() ) ) ),
+						$this->plugin_name, $nice_name, esc_url( $install_url ), $nice_name ) );
+				}
 				$activate_url = 'plugins.php?action=activate&plugin=' . urlencode( $plugin_info[ self::PLUGIN_INFO_KEY_NAME ] ) . '&plugin_status=all&paged=1&s&_wpnonce=' . urlencode( wp_create_nonce( 'activate-plugin_' . $name ) );
 
 				return $this->prepare_notice_message( sprintf( wp_kses( __( 'The &#8220;%s&#8221; plugin requires activating %s plugin. <a href="%s">Activate %s →</a>',
 					$this->get_text_domain() ), array( 'a' => array( 'href' => array() ) ) ),
 					$this->plugin_name, $nice_name, esc_url( admin_url( $activate_url ) ), $nice_name ) );
-
 			}
 
 			return null;
