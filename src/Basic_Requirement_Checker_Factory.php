@@ -12,7 +12,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker_With_Update_Disable' ) ) 
  * Falicitates createion of requirement checker
  */
 class WPDesk_Basic_Requirement_Checker_Factory {
-	const LIBRARY_TEXT_DOMAIN = 'requirement-checker';
+	const LIBRARY_TEXT_DOMAIN = 'wp-basic-requirements';
 
 	/**
 	 * Creates a simplest possible version of requirement checker.

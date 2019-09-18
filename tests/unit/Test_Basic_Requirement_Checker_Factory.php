@@ -3,7 +3,7 @@
 
 class Test_Basic_Requirement_Checker_Factory extends PHPUnit\Framework\TestCase {
 	public function test_can_create_checker_withn_valid_requirements() {
-
+		$existing_locale = 'pl_PL';
 		$requirements = array(
 			'php'          => '5.6',
 			'wp'           => '4.5',
@@ -23,7 +23,9 @@ class Test_Basic_Requirement_Checker_Factory extends PHPUnit\Framework\TestCase 
 		);
 
 		WP_Mock::wpFunction( 'get_locale' )
-		       ->andReturn( 'pl_PL' );
+		       ->andReturn( $existing_locale );
+		WP_Mock::wpFunction( 'load_textdomain' )
+			->once(); // locale pl_PL exists so it should try to load it
 
 		$factory = new WPDesk_Basic_Requirement_Checker_Factory();
 		$checker = $factory->create_from_requirement_array( 'whatever', 'whatever', $requirements );
