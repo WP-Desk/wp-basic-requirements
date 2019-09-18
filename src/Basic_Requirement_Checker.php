@@ -224,7 +224,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		 *
 		 * @return string
 		 */
-		private function prepare_notice_message( $message ) {
+		protected function prepare_notice_message( $message ) {
 			return '<div class="error"><p>' . $message . '</p></div>';
 		}
 
