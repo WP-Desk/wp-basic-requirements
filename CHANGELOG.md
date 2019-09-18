@@ -1,3 +1,9 @@
+## [3.0.1] - 2019-09-18
+### Fixed
+- Better new error messages display
+- get_plugins function loaded from wp-admin
+- Faster checks
+
 ## [3.0.0] - 2019-09-17
 ### Changed
 - Plugin classes moved to wp-builder
