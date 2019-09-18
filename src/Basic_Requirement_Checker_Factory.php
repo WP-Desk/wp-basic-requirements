@@ -12,17 +12,20 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker_With_Update_Disable' ) ) 
  * Falicitates createion of requirement checker
  */
 class WPDesk_Basic_Requirement_Checker_Factory {
+	const LIBRARY_TEXT_DOMAIN = 'requirement-checker';
+
 	/**
 	 * Creates a simplest possible version of requirement checker.
 	 *
 	 * @param string $plugin_file
 	 * @param string $plugin_name
-	 * @param string|null $text_domain
+	 * @param string|null $text_domain Text domain to use. If null try to use library text domain.
 	 *
 	 * @return WPDesk_Requirement_Checker
 	 */
 	public function create_requirement_checker( $plugin_file, $plugin_name, $text_domain = null ) {
-		return new WPDesk_Basic_Requirement_Checker( $plugin_file, $plugin_name, $this->initialize_translations($text_domain), null, null );
+		return new WPDesk_Basic_Requirement_Checker( $plugin_file, $plugin_name,
+			$this->initialize_translations( $text_domain ), null, null );
 	}
 
 	/**
@@ -30,8 +33,8 @@ class WPDesk_Basic_Requirement_Checker_Factory {
 	 *
 	 * @param string $plugin_file
 	 * @param string $plugin_name
-	 * @param string $text_domain
-	 * @param array $requirements
+	 * @param string $text_domain Text domain to use. If null try to use library text domain.
+	 * @param array $requirements Requirements array as given by plugin.
 	 *
 	 * @return WPDesk_Requirement_Checker
 	 */
@@ -39,7 +42,7 @@ class WPDesk_Basic_Requirement_Checker_Factory {
 		$requirements_checker = new WPDesk_Basic_Requirement_Checker_With_Update_Disable(
 			$plugin_file,
 			$plugin_name,
-			$this->initialize_translations($text_domain),
+			$this->initialize_translations( $text_domain ),
 			$requirements['php'],
 			$requirements['wp']
 		);
@@ -74,6 +77,22 @@ class WPDesk_Basic_Requirement_Checker_Factory {
 	 * @return string
 	 */
 	private function initialize_translations( $text_domain = null ) {
+		if ( $text_domain === null ) {
+			$text_domain = self::LIBRARY_TEXT_DOMAIN;
+
+			if ( function_exists( 'determine_locale' ) ) {
+				$locale = determine_locale();
+			} else { // before WP 5.0 compatibility
+				$locale = get_locale();
+			}
+			$locale = apply_filters( 'plugin_locale', $locale, self::LIBRARY_TEXT_DOMAIN );
+
+			$lang_mo_file = __DIR__ . '/../lang/' . self::LIBRARY_TEXT_DOMAIN . '-' . $locale . '.mo';
+			if ( file_exists( $lang_mo_file ) ) {
+				load_textdomain( self::LIBRARY_TEXT_DOMAIN, $lang_mo_file );
+			}
+		}
+
 		return $text_domain;
 	}
 }

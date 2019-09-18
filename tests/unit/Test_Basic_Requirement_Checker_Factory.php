@@ -22,6 +22,9 @@ class Test_Basic_Requirement_Checker_Factory extends PHPUnit\Framework\TestCase 
 			),
 		);
 
+		WP_Mock::wpFunction( 'get_locale' )
+		       ->andReturn( 'pl_PL' );
+
 		$factory = new WPDesk_Basic_Requirement_Checker_Factory();
 		$checker = $factory->create_from_requirement_array( 'whatever', 'whatever', $requirements );
 
