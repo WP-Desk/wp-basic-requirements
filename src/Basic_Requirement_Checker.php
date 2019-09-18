@@ -15,10 +15,9 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 
 		const PLUGIN_INFO_KEY_NICE_NAME = 'nice_name';
 		const PLUGIN_INFO_KEY_NAME = 'name';
-		const PLUGIN_INFO_KEY_REPOSITORY_URL = 'repository_url';
 
 		/** @var string */
-		private $plugin_name;
+		protected $plugin_name;
 		/** @var string */
 		private $plugin_file;
 		/** @var string */
@@ -169,6 +168,8 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		}
 
 		/**
+		 * Returns true if are requirements are met.
+		 *
 		 * @return bool
 		 */
 		public function are_requirements_met() {
@@ -353,7 +354,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 			if ( ! self::is_wp_plugin_active( $name ) ) {
 				$activate_url = 'plugins.php?action=activate&plugin=' . urlencode( $plugin_info[ self::PLUGIN_INFO_KEY_NAME ] ) . '&plugin_status=all&paged=1&s&_wpnonce=' . urlencode( wp_create_nonce( 'activate-plugin_' . $name ) );
 
-				return sprintf( wp_kses( __( 'The &#8220;%s&#8221; plugin activating %s plugin. <a href="%s">Activate %s →</a>',
+				return sprintf( wp_kses( __( 'The &#8220;%s&#8221; plugin requires activating %s plugin. <a href="%s">Activate %s →</a>',
 					$this->get_text_domain() ), array( 'a' => array( 'href' => array() ) ) ),
 					$this->plugin_name, $nice_name, esc_url( admin_url( $activate_url ) ), $nice_name );
 

@@ -4,6 +4,7 @@
 ### Added
 - Factory can create checker from requirement array
 - Support for update suggestion when required plugin not found
+- WPDesk_Basic_Requirement_Checker_With_Update_Disable can temporarily say that requirements are not met when required plugin is in the process of being updated
 
 ## [2.4.0] - 2019-06-04
 ### Added
