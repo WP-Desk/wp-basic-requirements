@@ -314,11 +314,11 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 			$install_url = wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=' . $slug ),
 				'install-plugin_' . $slug );
 
-			add_filter( 'plugins_api', function ( $api, $action, $args ) use ( $plugin_info ) {
+			add_filter( 'plugins_api', function ( $api, $action, $args ) use ( $plugin_info, $slug ) {
 				if ( 'plugin_information' !== $action ||
 				     false !== $api ||
 				     ! isset( $args->slug ) ||
-				     'wpdesk-helper' !== $args->slug
+				     $slug !== $args->slug
 				) {
 					return $api;
 				}
