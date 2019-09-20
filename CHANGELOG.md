@@ -1,3 +1,7 @@
+## [3.0.3] - 2019-09-20
+### Fixed
+- Fixed "" in translation
+
 ## [3.0.2] - 2019-09-18
 ### Fixed
 - Better error message display for temporary disabling
