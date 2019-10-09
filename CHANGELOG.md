@@ -1,3 +1,7 @@
+## [3.0.4] - 2019-09-20
+### Fixed
+- Fixed missing wp_nonce_url function
+
 ## [3.0.3] - 2019-09-20
 ### Fixed
 - Fixed "" in translation

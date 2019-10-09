@@ -310,10 +310,11 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		 * @return string
 		 */
 		private function prepare_plugin_repository_install_url( $plugin_info ) {
-			$slug        = basename( $plugin_info[ self::PLUGIN_INFO_KEY_NAME ] );
-			$install_url = wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=' . $slug ),
-				'install-plugin_' . $slug );
-
+			$slug = basename( $plugin_info[ self::PLUGIN_INFO_KEY_NAME ] );
+			$install_url = self_admin_url( 'update.php?action=install-plugin&plugin=' . $slug );
+			if ( function_exists( 'wp_nonce_url' ) ) {
+				$install_url = wp_nonce_url( $install_url, 'install-plugin_' . $slug );
+			}
 			add_filter( 'plugins_api', function ( $api, $action, $args ) use ( $plugin_info, $slug ) {
 				if ( 'plugin_information' !== $action ||
 				     false !== $api ||
@@ -351,7 +352,10 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 						$this->get_text_domain() ), array( 'a' => array( 'href' => array() ) ) ),
 						$this->plugin_name, $nice_name, esc_url( $install_url ), $nice_name ) );
 				}
-				$activate_url = 'plugins.php?action=activate&plugin=' . urlencode( $plugin_info[ self::PLUGIN_INFO_KEY_NAME ] ) . '&plugin_status=all&paged=1&s&_wpnonce=' . urlencode( wp_create_nonce( 'activate-plugin_' . $name ) );
+				$activate_url = 'plugins.php?action=activate&plugin=' . urlencode( $plugin_info[ self::PLUGIN_INFO_KEY_NAME ] ) . '&plugin_status=all&paged=1&s';
+				if ( function_exists( 'wp_create_nonce' ) ) {
+					$activate_url .= '&_wpnonce=' . urlencode( wp_create_nonce( 'activate-plugin_' . $name ) );
+				}
 
 				return $this->prepare_notice_message( sprintf( wp_kses( __( 'The &#8220;%s&#8221; plugin requires activating %s plugin. <a href="%s">Activate %s →</a>',
 					$this->get_text_domain() ), array( 'a' => array( 'href' => array() ) ) ),
