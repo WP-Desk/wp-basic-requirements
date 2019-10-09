@@ -1,3 +1,7 @@
+## [3.0.5] - 2019-09-20
+### Fixed
+- Fixed missing wp_create_nonce function
+
 ## [3.0.4] - 2019-09-20
 ### Fixed
 - Fixed missing wp_nonce_url function
