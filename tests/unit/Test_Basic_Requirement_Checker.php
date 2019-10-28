@@ -14,6 +14,8 @@ class Test_Basic_Requirement_Checker extends PHPUnit\Framework\TestCase {
 	const ALWAYS_VALID_WP_VERSION = '4.0';
 
 	const HOOK_TYPE_ACTION = 'action';
+	
+	const MINIMUM_REQUIRED_PLUGIN_VERSION = '1.0';
 
 	public function setUp() {
 		WP_Mock::setUp();
@@ -48,6 +50,8 @@ class Test_Basic_Requirement_Checker extends PHPUnit\Framework\TestCase {
 		$this->expectOutputRegex( "/PHP/" );
 		$requirements->handle_render_notices_action();
 	}
+	
+	
 
 	/**
 	 * @param string $php
@@ -57,7 +61,7 @@ class Test_Basic_Requirement_Checker extends PHPUnit\Framework\TestCase {
 	 */
 	private function create_requirements_for_php_wp( $php, $wp ) {
 		return new WPDesk_Basic_Requirement_Checker( self::RANDOM_PLUGIN_FILE, self::RANDOM_PLUGIN_NAME,
-			self::RANDOM_PLUGIN_TEXTDOMAIN, $php, $wp );
+			self::RANDOM_PLUGIN_TEXTDOMAIN, $php, $wp, self::MINIMUM_REQUIRED_PLUGIN_VERSION );
 	}
 
 	public function test_wp_version_check() {
@@ -76,6 +80,21 @@ class Test_Basic_Requirement_Checker extends PHPUnit\Framework\TestCase {
 		$requirements->handle_render_notices_action();
 	}
 
+	public function test_minimum_plugin_version_check() {
+		$minimum_plugin_version_fail = '0.1';
+		
+		$requirements = $this->create_requirements_for_php_wp(
+			self::ALWAYS_VALID_PHP_VERSION,
+			self::ALWAYS_VALID_WP_VERSION );
+		$this->assertTrue( $requirements->are_requirements_met(), 'Minimum plugin version is ok' );
+		$requirements->set_minimum_require_plugin_version( $minimum_plugin_version_fail );
+		$this->assertFalse( $requirements->are_requirements_met(),
+			'Failed as minimum required plugin version should be ' . $minimum_plugin_version_fail );
+		
+		$this->expectOutputRegex( "/Plugin/" );
+		$requirements->handle_render_notices_action();
+	}
+	
 	/**
 	 * @requires extension curl
 	 */

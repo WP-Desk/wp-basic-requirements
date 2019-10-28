@@ -19,13 +19,14 @@ class WPDesk_Basic_Requirement_Checker_Factory {
 	 *
 	 * @param string $plugin_file
 	 * @param string $plugin_name
+	 * @param string $minimum_required_plugin_version
 	 * @param string|null $text_domain Text domain to use. If null try to use library text domain.
 	 *
 	 * @return WPDesk_Requirement_Checker
 	 */
-	public function create_requirement_checker( $plugin_file, $plugin_name, $text_domain = null ) {
+	public function create_requirement_checker( $plugin_file, $plugin_name, $text_domain = null, $minimum_required_plugin_version ) {
 		return new WPDesk_Basic_Requirement_Checker( $plugin_file, $plugin_name,
-			$this->initialize_translations( $text_domain ), null, null );
+			$this->initialize_translations( $text_domain ), null, null, $minimum_required_plugin_version );
 	}
 
 	/**
@@ -44,7 +45,8 @@ class WPDesk_Basic_Requirement_Checker_Factory {
 			$plugin_name,
 			$this->initialize_translations( $text_domain ),
 			$requirements['php'],
-			$requirements['wp']
+			$requirements['wp'],
+			$requirements['minimum_required_plugin_version']
 		);
 
 		if ( isset( $requirements['plugins'] ) ) {

@@ -32,7 +32,20 @@ interface WPDesk_Requirement_Checker
      * @return $this
      */
     public function set_min_openssl_require($version);
-
+	
+	/**
+	 * @param $minimum_require_plugin_version
+	 *
+	 * @return $this
+	 */
+	public function set_minimum_require_plugin_version($minimum_require_plugin_version);
+	
+	/**
+	 * @param $force_plugin_update
+	 *
+	 * @return $this
+	 */
+	public function force_plugin_update($force_plugin_update);
     /**
      * @param string $plugin_name
      * @param string $nice_plugin_name Nice plugin name for better looks in notice
