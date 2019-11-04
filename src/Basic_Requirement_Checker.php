@@ -15,6 +15,8 @@
 			
 			const PLUGIN_INFO_KEY_NICE_NAME = 'nice_name';
 			const PLUGIN_INFO_KEY_NAME = 'name';
+			const PLUGIN_INFO_VERSION = 'version';
+			const PLUGIN_INFO_REQUIRED_VERSION = 'required_version';
 			
 			/** @var string */
 			protected $plugin_name;
@@ -38,10 +40,6 @@
 			protected $notices;
 			/** @var @string */
 			private $text_domain;
-			/** @var string */
-			private $minimum_required_plugin_version;
-			/** @var string */
-			private $force_plugin_update;
 			
 			/**
 			 * @param string $plugin_file
@@ -49,15 +47,11 @@
 			 * @param string $text_domain
 			 * @param string $php_version
 			 * @param string $wp_version
-			 * @param string $minimum_required_plugin_version
-			 * @param bool $force_plugin_update
 			 */
-			public function __construct( $plugin_file, $plugin_name, $text_domain, $php_version, $wp_version, $minimum_required_plugin_version, $force_plugin_update = false ) {
+			public function __construct( $plugin_file, $plugin_name, $text_domain, $php_version, $wp_version ) {
 				$this->plugin_file = $plugin_file;
 				$this->plugin_name = $plugin_name;
 				$this->text_domain = $text_domain;
-				$this->minimum_required_plugin_version = $minimum_required_plugin_version;
-				$this->force_plugin_update = $force_plugin_update;
 				
 				$this->set_min_php_require( $php_version );
 				$this->set_min_wp_require( $wp_version );
@@ -113,35 +107,17 @@
 			}
 			
 			/**
-			 * @param $minimum_require_plugin_version
-			 *
-			 * @return WPDesk_Basic_Requirement_Checker
-			 */
-			public function set_minimum_require_plugin_version( $minimum_require_plugin_version ) {
-				$this->minimum_required_plugin_version = $minimum_require_plugin_version;
-				return $this;
-			}
-			
-			/**
-			 * @param $force_plugin_update
-			 *
-			 * @return WPDesk_Basic_Requirement_Checker
-			 */
-			public function force_plugin_update( $force_plugin_update ) {
-				$this->force_plugin_update = $force_plugin_update;
-				return $this;
-			}
-			
-			/**
 			 * @param string $plugin_name Name in wp format dir/file.php
 			 * @param string $nice_plugin_name Nice plugin name for better looks in notice
+			 * @param string $plugin_require_version required plugin minimum version
 			 *
 			 * @return $this
 			 */
-			public function add_plugin_require( $plugin_name, $nice_plugin_name = null ) {
+			public function add_plugin_require( $plugin_name, $nice_plugin_name = null, $plugin_require_version = null ) {
 				$this->plugin_require[ $plugin_name ] = array(
 					self::PLUGIN_INFO_KEY_NAME      => $plugin_name,
-					self::PLUGIN_INFO_KEY_NICE_NAME => $nice_plugin_name === null ? $plugin_name : $nice_plugin_name
+					self::PLUGIN_INFO_KEY_NICE_NAME => $nice_plugin_name === null ? $plugin_name : $nice_plugin_name,
+					self::PLUGIN_INFO_VERSION       => $plugin_require_version === null ? '0.0' : $plugin_require_version,
 				);
 				
 				return $this;
@@ -228,14 +204,11 @@
 						$this->get_text_domain() ), esc_html( $this->plugin_name ),
 						'0x' . dechex( $this->min_openssl_version ) ) );
 				}
-				if ( false !== $this->check_minimum_required_plugin_version( $this->minimum_required_plugin_version ) ) {
-					$notices[] = $this->prepare_notice_message( sprintf( __('The &#8220;%s&#8221; plugin requires at least %s version to work correctly with WooCommerce. Please update it', $this->get_text_domain() ),
-						esc_html( $this->plugin_name ), $this->minimum_required_plugin_version ) );
-				}
 				
 				$notices = $this->append_plugin_require_notices( $notices );
 				$notices = $this->append_module_require_notices( $notices );
 				$notices = $this->append_settings_require_notices( $notices );
+				$notices = $this->check_minimum_require_plugins_version_and_display_notices( $notices );
 				
 				return $notices;
 			}
@@ -308,54 +281,53 @@
 			}
 			
 			/**
-			 * @param $required_minimum_version
+			 * @param $notices
 			 *
-			 * @return bool
-			 */
-			public function check_minimum_required_plugin_version( $required_minimum_version ) {
-				if ( null === $this->get_current_plugin_version() ) {
-					return false;
-				}
-				
-				return $this->get_current_plugin_version() > $required_minimum_version;
-			}
-			
-			/**
 			 * @return array
 			 */
-			private function get_existing_plugins() {
-				if( ! function_exists( 'get_plugins' ) ) {
-					require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-				}
+			private function check_minimum_require_plugins_version_and_display_notices( $notices ) {
 				
-				return ( get_plugins() ? get_plugins() : [] );
-			}
-			
-			/**
-			 * @return mixed|null
-			 */
-			public function get_current_plugin_version()
-			{
-				$version = null;
-				if (! empty( $this->get_existing_plugins() ) ) {
-					foreach ( $this->get_existing_plugins() as $plugin ) {
-						if ( $plugin['Name'] === $this->plugin_name ) {
-							$version = $plugin['Version'];
+				if ( $this->require_plugins() > 0 ) {
+					foreach ( $this->require_plugins() as $plugin ) {
+						if ( $plugin[ ucfirst( self::PLUGIN_INFO_VERSION ) ] < $plugin[ self::PLUGIN_INFO_REQUIRED_VERSION ] ) {
+							$notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin requires at least %s version of %s to work correctly. Please update it', $this->get_text_domain() ),
+								esc_html( $this->plugin_name ), $plugin[ self::PLUGIN_INFO_REQUIRED_VERSION ], $plugin[ ucfirst( self::PLUGIN_INFO_KEY_NAME ) ] ) );
 						}
 					}
 				}
 				
-				return $version;
+				return $notices;
 			}
 			
 			/**
-			 * @return string
+			 * Check the plugins directory and retrieve all required plugin files with plugin data.
+			 *
+			 * @return array
 			 */
-			private function notice_or_error()
-			{
-				$class = true == $this->force_plugin_update ? 'error' : 'notice notice-warning is-dismissible';
+			public function require_plugins() {
+				$require_plugins = array();
 				
-				return $class;
+				if ( file_exists( ABSPATH . '/wp-admin/includes/plugin.php' ) ) {
+					if ( ! function_exists( 'get_plugins' ) ) {
+						require_once ABSPATH . '/wp-admin/includes/plugin.php';
+					}
+					$get_existing_plugins = ( get_plugins() ? get_plugins() : array() );
+					
+					if ( ! empty( $this->plugin_require ) ) {
+						foreach ( $this->plugin_require as $plugin ) {
+							if ( ! isset( $plugin[ self::PLUGIN_INFO_VERSION ] ) ) {
+								unset( $this->plugin_require[ $plugin[ self::PLUGIN_INFO_KEY_NAME ] ] );
+							} else {
+								if ( self::is_wp_plugin_active( $plugin[ self::PLUGIN_INFO_KEY_NAME ] ) ) {
+									$require_plugins[ $plugin[ self::PLUGIN_INFO_KEY_NAME ] ]                                       = $get_existing_plugins[ $plugin[ self::PLUGIN_INFO_KEY_NAME ] ];
+									$require_plugins[ $plugin[ self::PLUGIN_INFO_KEY_NAME ] ][ self::PLUGIN_INFO_REQUIRED_VERSION ] = $plugin[ self::PLUGIN_INFO_VERSION ];
+								}
+							}
+						}
+					}
+				}
+				
+				return $require_plugins;
 			}
 			
 			/**
@@ -393,7 +365,7 @@
 			 * @return string
 			 */
 			private function prepare_plugin_repository_install_url( $plugin_info ) {
-				$slug = basename( $plugin_info[ self::PLUGIN_INFO_KEY_NAME ] );
+				$slug        = basename( $plugin_info[ self::PLUGIN_INFO_KEY_NAME ] );
 				$install_url = self_admin_url( 'update.php?action=install-plugin&plugin=' . $slug );
 				if ( function_exists( 'wp_nonce_url' ) && function_exists( 'wp_create_nonce' ) ) {
 					$install_url = wp_nonce_url( $install_url, 'install-plugin_' . $slug );
