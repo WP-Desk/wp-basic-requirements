@@ -16,7 +16,8 @@
 			const PLUGIN_INFO_KEY_NICE_NAME = 'nice_name';
 			const PLUGIN_INFO_KEY_NAME = 'name';
 			const PLUGIN_INFO_VERSION = 'version';
-			const PLUGIN_INFO_REQUIRED_VERSION = 'required_version';
+			const PLUGIN_INFO_FAKE_REQUIRED_MINIMUM_VERSION = '0.0';
+			const PLUGIN_INFO_TRANSIENT_NAME = 'require_plugins_data';
 			
 			/** @var string */
 			protected $plugin_name;
@@ -117,7 +118,8 @@
 				$this->plugin_require[ $plugin_name ] = array(
 					self::PLUGIN_INFO_KEY_NAME      => $plugin_name,
 					self::PLUGIN_INFO_KEY_NICE_NAME => $nice_plugin_name === null ? $plugin_name : $nice_plugin_name,
-					self::PLUGIN_INFO_VERSION       => $plugin_require_version === null ? '0.0' : $plugin_require_version,
+					self::PLUGIN_INFO_VERSION       => $plugin_require_version === null ?
+											self::PLUGIN_INFO_FAKE_REQUIRED_MINIMUM_VERSION : $plugin_require_version,
 				);
 				
 				return $this;
@@ -135,7 +137,7 @@
 			public function add_plugin_repository_require( $plugin_name, $version, $nice_plugin_name = null ) {
 				$this->plugin_require[ $plugin_name ] = array(
 					self::PLUGIN_INFO_KEY_NAME      => $plugin_name,
-					'version'                       => $version,
+					self::PLUGIN_INFO_VERSION       => $version,
 					'repository_url'                => 'http://downloads.wordpress.org/plugin/' . dirname( $plugin_name ) . '.latest-stable.zip',
 					self::PLUGIN_INFO_KEY_NICE_NAME => $nice_plugin_name === null ? $plugin_name : $nice_plugin_name
 				);
@@ -208,7 +210,7 @@
 				$notices = $this->append_plugin_require_notices( $notices );
 				$notices = $this->append_module_require_notices( $notices );
 				$notices = $this->append_settings_require_notices( $notices );
-				$notices = $this->check_minimum_require_plugins_version_and_display_notices( $notices );
+				$notices = $this->check_minimum_require_plugins_version_and_append_notices( $notices );
 				
 				return $notices;
 			}
@@ -285,13 +287,13 @@
 			 *
 			 * @return array
 			 */
-			private function check_minimum_require_plugins_version_and_display_notices( $notices ) {
+			private function check_minimum_require_plugins_version_and_append_notices( $notices ) {
 				
-				if ( $this->require_plugins() > 0 ) {
-					foreach ( $this->require_plugins() as $plugin ) {
-						if ( $plugin[ ucfirst( self::PLUGIN_INFO_VERSION ) ] < $plugin[ self::PLUGIN_INFO_REQUIRED_VERSION ] ) {
+				if ( count( $this->retrieve_require_plugins() ) > 0 ) {
+					foreach ( $this->retrieve_require_plugins() as $plugin ) {
+						if ( $plugin[ ucfirst( self::PLUGIN_INFO_VERSION ) ] < $plugin['required_version'] ) {
 							$notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin requires at least %s version of %s to work correctly. Please update it', $this->get_text_domain() ),
-								esc_html( $this->plugin_name ), $plugin[ self::PLUGIN_INFO_REQUIRED_VERSION ], $plugin[ ucfirst( self::PLUGIN_INFO_KEY_NAME ) ] ) );
+								esc_html( $this->plugin_name ), $plugin['required_version'], $plugin[ ucfirst( self::PLUGIN_INFO_KEY_NAME ) ] ) );
 						}
 					}
 				}
@@ -304,30 +306,34 @@
 			 *
 			 * @return array
 			 */
-			public function require_plugins() {
+			private function retrieve_require_plugins() {
 				$require_plugins = array();
+				$plugins         = array();
 				
-				if ( file_exists( ABSPATH . '/wp-admin/includes/plugin.php' ) ) {
-					if ( ! function_exists( 'get_plugins' ) ) {
-						require_once ABSPATH . '/wp-admin/includes/plugin.php';
-					}
-					$get_existing_plugins = ( get_plugins() ? get_plugins() : array() );
+				if ( function_exists( 'get_transient' ) ) {
+					$plugins = get_transient( self::PLUGIN_INFO_TRANSIENT_NAME );
 					
-					if ( ! empty( $this->plugin_require ) ) {
-						foreach ( $this->plugin_require as $plugin ) {
-							if ( ! isset( $plugin[ self::PLUGIN_INFO_VERSION ] ) ) {
-								unset( $this->plugin_require[ $plugin[ self::PLUGIN_INFO_KEY_NAME ] ] );
-							} else {
+					if ( false === $plugins ) {
+						if ( ! function_exists( 'get_plugins' ) ) {
+							require_once ABSPATH . '/wp-admin/includes/plugin.php';
+						}
+						
+						$plugins = get_plugins();
+						
+						if ( ! empty( $this->plugin_require ) ) {
+							foreach ( $this->plugin_require as $plugin ) {
 								if ( self::is_wp_plugin_active( $plugin[ self::PLUGIN_INFO_KEY_NAME ] ) ) {
-									$require_plugins[ $plugin[ self::PLUGIN_INFO_KEY_NAME ] ]                                       = $get_existing_plugins[ $plugin[ self::PLUGIN_INFO_KEY_NAME ] ];
-									$require_plugins[ $plugin[ self::PLUGIN_INFO_KEY_NAME ] ][ self::PLUGIN_INFO_REQUIRED_VERSION ] = $plugin[ self::PLUGIN_INFO_VERSION ];
+									$require_plugins[ $plugin[ self::PLUGIN_INFO_KEY_NAME ] ] = $plugins[ $plugin[ self::PLUGIN_INFO_KEY_NAME ] ];
+									$require_plugins[ $plugin[ self::PLUGIN_INFO_KEY_NAME ] ]['required_version'] = $plugin[ self::PLUGIN_INFO_VERSION ];
 								}
 							}
 						}
+						
+						set_transient( self::PLUGIN_INFO_TRANSIENT_NAME, $plugins, DAY_IN_SECONDS );
 					}
 				}
 				
-				return $require_plugins;
+				return $plugins;
 			}
 			
 			/**
