@@ -18,6 +18,7 @@
 			const PLUGIN_INFO_VERSION = 'version';
 			const PLUGIN_INFO_FAKE_REQUIRED_MINIMUM_VERSION = '0.0';
 			const PLUGIN_INFO_TRANSIENT_NAME = 'require_plugins_data';
+			const PLUGIN_INFO_TRANSIENT_EXPIRATION_TIME = 0;
 			
 			/** @var string */
 			protected $plugin_name;
@@ -119,7 +120,7 @@
 					self::PLUGIN_INFO_KEY_NAME      => $plugin_name,
 					self::PLUGIN_INFO_KEY_NICE_NAME => $nice_plugin_name === null ? $plugin_name : $nice_plugin_name,
 					self::PLUGIN_INFO_VERSION       => $plugin_require_version === null ?
-											self::PLUGIN_INFO_FAKE_REQUIRED_MINIMUM_VERSION : $plugin_require_version,
+						self::PLUGIN_INFO_FAKE_REQUIRED_MINIMUM_VERSION : $plugin_require_version,
 				);
 				
 				return $this;
@@ -289,8 +290,8 @@
 			 */
 			private function check_minimum_require_plugins_version_and_append_notices( $notices ) {
 				
-				if ( count( $this->retrieve_require_plugins() ) > 0 ) {
-					foreach ( $this->retrieve_require_plugins() as $plugin ) {
+				if ( count( $this->retrieve_required_plugins_data() ) > 0 ) {
+					foreach ( $this->retrieve_required_plugins_data() as $plugin ) {
 						if ( $plugin[ ucfirst( self::PLUGIN_INFO_VERSION ) ] < $plugin['required_version'] ) {
 							$notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin requires at least %s version of %s to work correctly. Please update it', $this->get_text_domain() ),
 								esc_html( $this->plugin_name ), $plugin['required_version'], $plugin[ ucfirst( self::PLUGIN_INFO_KEY_NAME ) ] ) );
@@ -302,13 +303,11 @@
 			}
 			
 			/**
-			 * Check the plugins directory and retrieve all required plugin files with plugin data.
+			 * Check the plugins directory and retrieve all plugin files with plugin data.
 			 *
 			 * @return array
 			 */
-			private function retrieve_require_plugins() {
-				$require_plugins = array();
-				$plugins         = array();
+			private function retrieve_plugins_data() {
 				
 				if ( function_exists( 'get_transient' ) ) {
 					$plugins = get_transient( self::PLUGIN_INFO_TRANSIENT_NAME );
@@ -318,22 +317,39 @@
 							require_once ABSPATH . '/wp-admin/includes/plugin.php';
 						}
 						
-						$plugins = get_plugins();
+						$plugins = function_exists( 'get_plugins' ) ? get_plugins() : array();
 						
-						if ( ! empty( $this->plugin_require ) ) {
-							foreach ( $this->plugin_require as $plugin ) {
-								if ( self::is_wp_plugin_active( $plugin[ self::PLUGIN_INFO_KEY_NAME ] ) ) {
-									$require_plugins[ $plugin[ self::PLUGIN_INFO_KEY_NAME ] ] = $plugins[ $plugin[ self::PLUGIN_INFO_KEY_NAME ] ];
-									$require_plugins[ $plugin[ self::PLUGIN_INFO_KEY_NAME ] ]['required_version'] = $plugin[ self::PLUGIN_INFO_VERSION ];
-								}
+						set_transient( self::PLUGIN_INFO_TRANSIENT_NAME, $plugins, self::PLUGIN_INFO_TRANSIENT_EXPIRATION_TIME );
+					}
+					
+					return $plugins;
+				}
+				
+				return array();
+			}
+			
+			/**
+			 * Check the plugins directory and retrieve all required plugin files with plugin data.
+			 *
+			 * @return array
+			 */
+			private function retrieve_required_plugins_data() {
+				
+				$require_plugins = array();
+				if ( count( $this->retrieve_plugins_data() ) > 0 ) {
+					$plugins = $this->retrieve_plugins_data();
+					
+					if ( ! empty( $this->plugin_require ) ) {
+						foreach ( $this->plugin_require as $plugin ) {
+							if ( self::is_wp_plugin_active( $plugin[ self::PLUGIN_INFO_KEY_NAME ] ) ) {
+								$require_plugins[ $plugin[ self::PLUGIN_INFO_KEY_NAME ] ] = $plugins[ $plugin[ self::PLUGIN_INFO_KEY_NAME ] ];
+								$require_plugins[ $plugin[ self::PLUGIN_INFO_KEY_NAME ] ]['required_version'] = $plugin[ self::PLUGIN_INFO_VERSION ];
 							}
 						}
-						
-						set_transient( self::PLUGIN_INFO_TRANSIENT_NAME, $plugins, DAY_IN_SECONDS );
 					}
 				}
 				
-				return $plugins;
+				return $require_plugins;
 			}
 			
 			/**
@@ -551,6 +567,8 @@
 			public function handle_deactivate_action() {
 				if ( isset( $this->plugin_file ) ) {
 					deactivate_plugins( plugin_basename( $this->plugin_file ) );
+					
+					delete_transient( self::PLUGIN_INFO_TRANSIENT_NAME );
 				}
 			}
 			
@@ -564,6 +582,10 @@
 			public function handle_render_notices_action() {
 				foreach ( $this->notices as $notice ) {
 					echo $notice;
+				}
+				
+				if ( function_exists( 'delete_transient' ) ) {
+					delete_transient( self::PLUGIN_INFO_TRANSIENT_NAME );
 				}
 			}
 		}
