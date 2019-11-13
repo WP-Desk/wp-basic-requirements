@@ -306,7 +306,7 @@
 			/**
 			 * Check the plugins directory and retrieve all plugin files with plugin data.
 			 *
-			 * @return array
+			 * @return array In format [ 'plugindir/pluginfile.php' => ['Name' => 'Plugin Name', 'Version' => '1.0.1', ...],  ]
 			 */
 			private static function retrieve_plugins_data_in_transient() {
 				
@@ -327,7 +327,7 @@
 			/**
 			 * Check the plugins directory and retrieve all required plugin files with plugin data.
 			 *
-			 * @return array
+			 * @return array In format [ 'plugindir/pluginfile.php' => ['Name' => 'Plugin Name', 'Version' => '1.0.1', 'required_version' => '1.0.2']...  ]
 			 */
 			private function retrieve_required_plugins_data() {
 				
