@@ -17,8 +17,10 @@
 			const PLUGIN_INFO_KEY_NAME = 'name';
 			const PLUGIN_INFO_VERSION = 'version';
 			const PLUGIN_INFO_FAKE_REQUIRED_MINIMUM_VERSION = '0.0';
-			const PLUGIN_INFO_TRANSIENT_NAME = 'require_plugins_data';
 			const PLUGIN_INFO_TRANSIENT_EXPIRATION_TIME = 0;
+			const PLUGIN_INFO_APPEND_PLUGIN_DATA = 'required_version';
+			const PLUGIN_INFO_REQUIRED_PLUGINS_TRANSIENT_NAME = 'require_plugins_data';
+			const PLUGIN_INFO_IS_WP_PLUGIN_INSTALLED_TRANSIENT_NAME = 'is_wp_plugin_installed';
 			
 			/** @var string */
 			protected $plugin_name;
@@ -284,17 +286,27 @@
 			}
 			
 			/**
+			 * @return array Transient Names
+			 */
+			private function transient_names() {
+				return array(
+					self::PLUGIN_INFO_REQUIRED_PLUGINS_TRANSIENT_NAME,
+					self::PLUGIN_INFO_IS_WP_PLUGIN_INSTALLED_TRANSIENT_NAME,
+				);
+			}
+			
+			/**
 			 * @param $notices
 			 *
 			 * @return array
 			 */
 			private function check_minimum_require_plugins_version_and_append_notices( $notices ) {
-				
-				if ( count( $this->retrieve_required_plugins_data() ) > 0 ) {
-					foreach ( $this->retrieve_required_plugins_data() as $plugin ) {
-						if ( $plugin[ ucfirst( self::PLUGIN_INFO_VERSION ) ] < $plugin['required_version'] ) {
+				$required_plugins = $this->retrieve_required_plugins_data();
+				if ( count( $required_plugins ) > 0 ) {
+					foreach ( $required_plugins as $plugin ) {
+						if ( $plugin[ ucfirst( self::PLUGIN_INFO_VERSION ) ] < $plugin[ self::PLUGIN_INFO_APPEND_PLUGIN_DATA ] ) {
 							$notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin requires at least %s version of %s to work correctly. Please update it', $this->get_text_domain() ),
-								esc_html( $this->plugin_name ), $plugin['required_version'], $plugin[ ucfirst( self::PLUGIN_INFO_KEY_NAME ) ] ) );
+								esc_html( $this->plugin_name ), $plugin[ self::PLUGIN_INFO_APPEND_PLUGIN_DATA ], $plugin[ ucfirst( self::PLUGIN_INFO_KEY_NAME ) ] ) );
 						}
 					}
 				}
@@ -303,29 +315,27 @@
 			}
 			
 			/**
-			 * Check the plugins directory and retrieve all plugin files with plugin data.
+			 * Check the plugins directory and retrieve installed plugin file or plugin data.
 			 *
-			 * @return array
+			 * @param $transient_name
+			 * @param $plugin_file
+			 *
+			 * @return array|bool
 			 */
-			private function retrieve_plugins_data() {
-				
-				if ( function_exists( 'get_transient' ) ) {
-					$plugins = get_transient( self::PLUGIN_INFO_TRANSIENT_NAME );
-					
-					if ( false === $plugins ) {
-						if ( ! function_exists( 'get_plugins' ) ) {
-							require_once ABSPATH . '/wp-admin/includes/plugin.php';
-						}
-						
-						$plugins = function_exists( 'get_plugins' ) ? get_plugins() : array();
-						
-						set_transient( self::PLUGIN_INFO_TRANSIENT_NAME, $plugins, self::PLUGIN_INFO_TRANSIENT_EXPIRATION_TIME );
-					}
-					
-					return $plugins;
+			private static function retrieve_plugins_data_in_transient( $transient_name, $plugin_file = '' ) {
+				if ( ! function_exists( 'get_plugins' ) ) {
+					require_once ABSPATH . '/wp-admin/includes/plugin.php';
 				}
 				
-				return array();
+				
+				$plugins = get_transient( $transient_name );
+				
+				if ( $plugins === false ) {
+					$plugins = ! empty( $plugin_file ) ? array_key_exists( $plugin_file, get_plugins() ) : get_plugins();
+					set_transient( $transient_name, $plugins, self::PLUGIN_INFO_TRANSIENT_EXPIRATION_TIME );
+				}
+				
+				return $plugins;
 			}
 			
 			/**
@@ -336,14 +346,16 @@
 			private function retrieve_required_plugins_data() {
 				
 				$require_plugins = array();
-				if ( count( $this->retrieve_plugins_data() ) > 0 ) {
-					$plugins = $this->retrieve_plugins_data();
-					
+				$plugins = self::retrieve_plugins_data_in_transient( self::PLUGIN_INFO_REQUIRED_PLUGINS_TRANSIENT_NAME );
+				if ( count( $plugins ) > 0 ) {
 					if ( ! empty( $this->plugin_require ) ) {
 						foreach ( $this->plugin_require as $plugin ) {
-							if ( self::is_wp_plugin_active( $plugin[ self::PLUGIN_INFO_KEY_NAME ] ) ) {
-								$require_plugins[ $plugin[ self::PLUGIN_INFO_KEY_NAME ] ] = $plugins[ $plugin[ self::PLUGIN_INFO_KEY_NAME ] ];
-								$require_plugins[ $plugin[ self::PLUGIN_INFO_KEY_NAME ] ]['required_version'] = $plugin[ self::PLUGIN_INFO_VERSION ];
+							$plugin_file_name = $plugin[ self::PLUGIN_INFO_KEY_NAME ];
+							$plugin_version = $plugin[ self::PLUGIN_INFO_VERSION ];
+							
+							if ( self::is_wp_plugin_active( $plugin_file_name ) ) {
+								$require_plugins[ $plugin[ $plugin_file_name ] ] = $plugins[ $plugin_file_name ];
+								$require_plugins[ $plugin[ $plugin_file_name ] ][ self::PLUGIN_INFO_APPEND_PLUGIN_DATA ] = $plugin_version;
 							}
 						}
 					}
@@ -422,7 +434,7 @@
 				$nice_name = $plugin_info[ self::PLUGIN_INFO_KEY_NICE_NAME ];
 				
 				if ( ! self::is_wp_plugin_active( $name ) ) {
-					if ( ! self::is_wp_plugin_installed( $name ) ) {
+					if ( ! self::is_wp_plugin_installed( self::PLUGIN_INFO_IS_WP_PLUGIN_INSTALLED_TRANSIENT_NAME, $name ) ) {
 						$install_url = $this->prepare_plugin_repository_install_url( $plugin_info );
 						
 						return $this->prepare_notice_message( sprintf( wp_kses( __( 'The &#8220;%s&#8221; plugin requires free %s plugin. <a href="%s">Install %s →</a>',
@@ -463,15 +475,17 @@
 			 * Checks if plugin is installed. Needs to be enabled in deferred way.
 			 *
 			 * @param string $plugin_file
+			 * @param string $transient_name
 			 *
 			 * @return bool
 			 */
-			public static function is_wp_plugin_installed( $plugin_file ) {
-				if ( ! function_exists( 'get_plugins' ) ) {
-					require_once ABSPATH . '/wp-admin/includes/plugin.php';
+			public static function is_wp_plugin_installed( $transient_name, $plugin_file ) {
+				if ( isset( $plugin_file ) ) {
+					return self::retrieve_plugins_data_in_transient( $transient_name, $plugin_file );
+					
 				}
 				
-				return array_key_exists( $plugin_file, get_plugins() );
+				return false;
 			}
 			
 			/**
@@ -584,9 +598,7 @@
 					echo $notice;
 				}
 				
-				if ( function_exists( 'delete_transient' ) ) {
-					delete_transient( self::PLUGIN_INFO_TRANSIENT_NAME );
-				}
+				delete_transient( self::PLUGIN_INFO_TRANSIENT_NAME );
 			}
 		}
 	}

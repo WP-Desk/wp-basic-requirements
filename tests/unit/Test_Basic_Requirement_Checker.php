@@ -15,11 +15,22 @@
 		
 		const HOOK_TYPE_ACTION = 'action';
 		
+		const ALWAYS_FUNCTION_EXISTS = 'function_exists';
+		
 		public function setUp() {
 			WP_Mock::setUp();
 			
 			WP_Mock::wpFunction( 'get_bloginfo' )
 			       ->andReturn( self::ALWAYS_VALID_WP_VERSION );
+			
+			WP_Mock::wpFunction( 'get_transient' )
+			       ->andReturn( self::ALWAYS_FUNCTION_EXISTS );
+			
+			WP_Mock::wpFunction('set_transient')
+					->andReturn( self::ALWAYS_FUNCTION_EXISTS );
+			
+			WP_Mock::wpFunction( 'delete_transient' )
+					->andReturn( self::ALWAYS_FUNCTION_EXISTS );
 		}
 		
 		public function tearDown() {
@@ -48,8 +59,6 @@
 			$this->expectOutputRegex( "/PHP/" );
 			$requirements->handle_render_notices_action();
 		}
-		
-		
 		
 		/**
 		 * @param string $php
