@@ -582,7 +582,9 @@
 				if ( isset( $this->plugin_file ) ) {
 					deactivate_plugins( plugin_basename( $this->plugin_file ) );
 					
-					delete_transient( self::PLUGIN_INFO_TRANSIENT_NAME );
+					foreach ($this->transient_names() as $transient_name) {
+						delete_transient( $transient_name );
+					}
 				}
 			}
 			
@@ -598,7 +600,6 @@
 					echo $notice;
 				}
 				
-				delete_transient( self::PLUGIN_INFO_TRANSIENT_NAME );
 			}
 		}
 	}
