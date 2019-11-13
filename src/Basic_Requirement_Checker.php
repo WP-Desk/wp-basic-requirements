@@ -296,7 +296,7 @@
 			}
 			
 			/**
-			 * @param $notices
+			 * @param $notices array
 			 *
 			 * @return array
 			 */
