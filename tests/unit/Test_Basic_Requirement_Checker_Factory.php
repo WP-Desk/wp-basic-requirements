@@ -24,8 +24,6 @@ class Test_Basic_Requirement_Checker_Factory extends PHPUnit\Framework\TestCase 
 
 		WP_Mock::wpFunction( 'get_locale' )
 		       ->andReturn( $existing_locale );
-		WP_Mock::wpFunction( 'load_textdomain' )
-			->once(); // locale pl_PL exists so it should try to load it
 
 		$factory = new WPDesk_Basic_Requirement_Checker_Factory();
 		$checker = $factory->create_from_requirement_array( 'whatever', 'whatever', $requirements );
