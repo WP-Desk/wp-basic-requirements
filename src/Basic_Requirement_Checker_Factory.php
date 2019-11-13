@@ -24,8 +24,7 @@ class WPDesk_Basic_Requirement_Checker_Factory {
 	 * @return WPDesk_Requirement_Checker
 	 */
 	public function create_requirement_checker( $plugin_file, $plugin_name, $text_domain = null ) {
-		return new WPDesk_Basic_Requirement_Checker( $plugin_file, $plugin_name,
-			$this->initialize_translations( $text_domain ), null, null );
+		return new WPDesk_Basic_Requirement_Checker( $plugin_file, $plugin_name, $text_domain, null, null );
 	}
 
 	/**
@@ -42,7 +41,7 @@ class WPDesk_Basic_Requirement_Checker_Factory {
 		$requirements_checker = new WPDesk_Basic_Requirement_Checker_With_Update_Disable(
 			$plugin_file,
 			$plugin_name,
-			$this->initialize_translations( $text_domain ),
+			$text_domain,
 			$requirements['php'],
 			$requirements['wp']
 		);
@@ -67,32 +66,5 @@ class WPDesk_Basic_Requirement_Checker_Factory {
 		}
 
 		return $requirements_checker;
-	}
-
-	/**
-	 * Tries to initialize translations for requirement checker. If not given then default library translation is used.
-	 *
-	 * @param string|null $text_domain
-	 *
-	 * @return string
-	 */
-	private function initialize_translations( $text_domain = null ) {
-		if ( $text_domain === null ) {
-			$text_domain = self::LIBRARY_TEXT_DOMAIN;
-
-			if ( function_exists( 'determine_locale' ) ) {
-				$locale = determine_locale();
-			} else { // before WP 5.0 compatibility
-				$locale = get_locale();
-			}
-			$locale = apply_filters( 'plugin_locale', $locale, self::LIBRARY_TEXT_DOMAIN );
-
-			$lang_mo_file = __DIR__ . '/../lang/' . self::LIBRARY_TEXT_DOMAIN . '-' . $locale . '.mo';
-			if ( file_exists( $lang_mo_file ) ) {
-				load_textdomain( self::LIBRARY_TEXT_DOMAIN, $lang_mo_file );
-			}
-		}
-
-		return $text_domain;
 	}
 }
