@@ -1,3 +1,7 @@
+## [3.1.1] - 2019-11-14
+### Feature
+- Minimum required plugin version notice
+
 ## [3.1.0] - 2019-11-13
 ### Changed
 - Removed .mo file
