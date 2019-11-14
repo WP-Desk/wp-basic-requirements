@@ -12,6 +12,8 @@
 		class WPDesk_Basic_Requirement_Checker implements WPDesk_Requirement_Checker {
 			const EXTENSION_NAME_OPENSSL = 'openssl';
 			const HOOK_ADMIN_NOTICES_ACTION = 'admin_notices';
+			const HOOK_PLUGIN_DEACTIVATED_ACTION = 'deactivated_plugin';
+			const HOOK_PLUGIN_ACTIVATED_ACTION = 'activated_plugin';
 			
 			const PLUGIN_INFO_KEY_NICE_NAME = 'nice_name';
 			const PLUGIN_INFO_KEY_NAME = 'name';
@@ -571,6 +573,33 @@
 			}
 			
 			/**
+			 * Triggers the transient delete after plugin deactivated
+			 *
+			 *@return void
+			 */
+			public function transient_delete_on_deactivated_plugin() {
+				add_action( self::HOOK_PLUGIN_DEACTIVATED_ACTION, array( $this, 'handle_transient_delete_action' ) );
+			}
+			
+			/**
+			 * Triggers the transient delete after plugin activated
+			 *
+			 *@return void
+			 */
+			public function transient_delete_on_activated_plugin() {
+				add_action( self::HOOK_PLUGIN_ACTIVATED_ACTION,  array( $this,'handle_transient_delete_action' ) );
+			}
+			
+			/**
+			 * Handles the transient delete
+			 *
+			 * @return void
+			 */
+			public function handle_transient_delete_action() {
+				delete_transient(self::PLUGIN_INFO_TRANSIENT_NAME );
+			}
+			
+			/**
 			 * Should be called as WordPress action
 			 *
 			 * @return void
@@ -581,7 +610,6 @@
 				foreach ( $this->notices as $notice ) {
 					echo $notice;
 				}
-				
 			}
 		}
 	}

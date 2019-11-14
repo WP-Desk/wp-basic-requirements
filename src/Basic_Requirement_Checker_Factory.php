@@ -51,6 +51,8 @@
 				foreach ( $requirements['plugins'] as $requirement ) {
 					$requirements_checker->add_plugin_require( $requirement['name'], $requirement['nice_name'], $requirement['version'] );
 				}
+				
+				$requirements_checker->handle_transient_delete_action();
 			}
 			
 			if ( isset( $requirements['repo_plugins'] ) ) {
