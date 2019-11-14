@@ -1,5 +1,5 @@
-## [3.1.1] - 2019-11-14
-### Feature
+## [3.2.0] - 2019-11-14
+### Added
 - Minimum required plugin version notice
 
 ## [3.1.0] - 2019-11-13
