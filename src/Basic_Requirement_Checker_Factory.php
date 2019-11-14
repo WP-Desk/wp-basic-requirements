@@ -25,7 +25,7 @@
 		 */
 		public function create_requirement_checker( $plugin_file, $plugin_name, $text_domain = null ) {
 			return new WPDesk_Basic_Requirement_Checker( $plugin_file, $plugin_name,
-				$this->initialize_translations( $text_domain ), null, null );
+				$text_domain, null, null );
 		}
 		
 		/**
