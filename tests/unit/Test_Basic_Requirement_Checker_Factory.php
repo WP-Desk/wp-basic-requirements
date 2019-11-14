@@ -11,6 +11,7 @@ class Test_Basic_Requirement_Checker_Factory extends PHPUnit\Framework\TestCase 
 				array(
 					'name'      => 'woocommerce/woocommerce.php',
 					'nice_name' => 'WooCommerce',
+					'version'   => '1.0'
 				),
 			),
 			'repo_plugins' => array(
