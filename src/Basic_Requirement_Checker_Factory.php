@@ -52,7 +52,7 @@
 					$requirements_checker->add_plugin_require( $requirement['name'], $requirement['nice_name'], $requirement['version'] );
 				}
 				
-				$requirements_checker->handle_transient_delete_action();
+				$requirements_checker->transient_delete_on_plugin_version_changed();
 			}
 			
 			if ( isset( $requirements['repo_plugins'] ) ) {

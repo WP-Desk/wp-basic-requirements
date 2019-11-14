@@ -21,7 +21,7 @@
 			const PLUGIN_INFO_FAKE_REQUIRED_MINIMUM_VERSION = '0.0';
 			const PLUGIN_INFO_APPEND_PLUGIN_DATA = 'required_version';
 			const PLUGIN_INFO_TRANSIENT_NAME = 'require_plugins_data';
-			const PLUGIN_INFO_TRANSIENT_EXPIRATION_TIME = 0;
+			const PLUGIN_INFO_TRANSIENT_EXPIRATION_TIME = 16;
 			
 			/** @var string */
 			protected $plugin_name;
@@ -577,16 +577,8 @@
 			 *
 			 *@return void
 			 */
-			public function transient_delete_on_deactivated_plugin() {
+			public function transient_delete_on_plugin_version_changed() {
 				add_action( self::HOOK_PLUGIN_DEACTIVATED_ACTION, array( $this, 'handle_transient_delete_action' ) );
-			}
-			
-			/**
-			 * Triggers the transient delete after plugin activated
-			 *
-			 *@return void
-			 */
-			public function transient_delete_on_activated_plugin() {
 				add_action( self::HOOK_PLUGIN_ACTIVATED_ACTION,  array( $this,'handle_transient_delete_action' ) );
 			}
 			
