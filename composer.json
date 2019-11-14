@@ -24,6 +24,13 @@
     "autoload-dev": {
         "classmap": ["src", "tests"]
     },
+    "extra": {
+        "text-domain": "wp-basic-requirements",
+        "translations-folder": "lang",
+        "po-files": {
+            "pl_PL": "wp-basic-requirements-pl_PL.po"
+        }
+    },
     "scripts": {
         "phpcs": "phpcs",
         "phpunit-unit": "phpunit --configuration phpunit-unit.xml --coverage-text --colors=never",

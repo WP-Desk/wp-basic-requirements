@@ -1,3 +1,8 @@
+## [3.1.0] - 2019-11-13
+### Changed
+- Removed .mo file
+- Translation set in composer extra section
+
 ## [3.0.5] - 2019-09-20
 ### Fixed
 - Fixed missing wp_create_nonce function
