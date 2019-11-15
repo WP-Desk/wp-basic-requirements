@@ -42,14 +42,15 @@
 			$requirements_checker = new WPDesk_Basic_Requirement_Checker_With_Update_Disable(
 				$plugin_file,
 				$plugin_name,
-				 $text_domain,
+				$text_domain,
 				$requirements['php'],
 				$requirements['wp']
 			);
 			
 			if ( isset( $requirements['plugins'] ) ) {
 				foreach ( $requirements['plugins'] as $requirement ) {
-					$requirements_checker->add_plugin_require( $requirement['name'], $requirement['nice_name'], $requirement['version'] );
+					$version = isset( $requirement['version'] ) ? $requirement['version'] : null;
+					$requirements_checker->add_plugin_require( $requirement['name'], $requirement['nice_name'], $version );
 				}
 				
 				$requirements_checker->transient_delete_on_plugin_version_changed();
