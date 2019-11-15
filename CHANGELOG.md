@@ -1,3 +1,7 @@
+## [3.2.1] - 2019-11-15
+### Fixed
+- Fixed plugin version notice
+
 ## [3.2.0] - 2019-11-14
 ### Added
 - Minimum required plugin version notice

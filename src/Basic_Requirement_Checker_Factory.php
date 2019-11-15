@@ -1,19 +1,19 @@
 <?php
-	
+
 	if ( ! class_exists( 'Basic_Requirement_Checker' ) ) {
 		require_once 'Basic_Requirement_Checker.php';
 	}
-	
+
 	if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker_With_Update_Disable' ) ) {
 		require_once 'Basic_Requirement_Checker_With_Update_Disable.php';
 	}
-	
+
 	/**
 	 * Falicitates createion of requirement checker
 	 */
 	class WPDesk_Basic_Requirement_Checker_Factory {
 		const LIBRARY_TEXT_DOMAIN = 'wp-basic-requirements';
-		
+
 		/**
 		 * Creates a simplest possible version of requirement checker.
 		 *
@@ -27,7 +27,7 @@
 			return new WPDesk_Basic_Requirement_Checker( $plugin_file, $plugin_name,
 				$text_domain, null, null );
 		}
-		
+
 		/**
 		 * Creates a requirement checker according to given requirements array info.
 		 *
@@ -46,28 +46,29 @@
 				$requirements['php'],
 				$requirements['wp']
 			);
-			
+
 			if ( isset( $requirements['plugins'] ) ) {
 				foreach ( $requirements['plugins'] as $requirement ) {
-					$requirements_checker->add_plugin_require( $requirement['name'], $requirement['nice_name'], $requirement['version'] );
+					$version = isset( $requirement['version'] ) ? $requirement['version'] : null;
+					$requirements_checker->add_plugin_require( $requirement['name'], $requirement['nice_name'], $version );
 				}
-				
+
 				$requirements_checker->transient_delete_on_plugin_version_changed();
 			}
-			
+
 			if ( isset( $requirements['repo_plugins'] ) ) {
 				foreach ( $requirements['repo_plugins'] as $requirement ) {
 					$requirements_checker->add_plugin_repository_require( $requirement['name'], $requirement['version'],
 						$requirement['nice_name'] );
 				}
 			}
-			
+
 			if ( isset( $requirements['modules'] ) ) {
 				foreach ( $requirements['modules'] as $requirement ) {
 					$requirements_checker->add_php_module_require( $requirement['name'], $requirement['nice_name'] );
 				}
 			}
-			
+
 			return $requirements_checker;
 		}
 	}
