@@ -1,6 +1,7 @@
 ## [3.2.1] - 2019-11-15
 ### Fixed
 - Fixed plugin version notice
+- Fixed required plugin name display in admin notices
 
 ## [3.2.0] - 2019-11-14
 ### Added

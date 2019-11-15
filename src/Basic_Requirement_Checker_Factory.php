@@ -42,7 +42,7 @@
 			$requirements_checker = new WPDesk_Basic_Requirement_Checker_With_Update_Disable(
 				$plugin_file,
 				$plugin_name,
-				 $text_domain,
+				$text_domain,
 				$requirements['php'],
 				$requirements['wp']
 			);
