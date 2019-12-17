@@ -1,3 +1,7 @@
+## [3.2.2] - 2019-12-17
+### Fixed
+- Plugin version should be checked only in needed
+
 ## [3.2.1] - 2019-11-15
 ### Fixed
 - Fixed plugin version notice

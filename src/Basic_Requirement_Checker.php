@@ -37,6 +37,8 @@
 			private $min_openssl_version = null;
 			/** @var array */
 			protected $plugin_require;
+			/** @var bool */
+			protected $should_check_plugin_versions = false;
 			/** @var array */
 			private $module_require;
 			/** @var array */
@@ -119,6 +121,9 @@
 			 * @return $this
 			 */
 			public function add_plugin_require( $plugin_name, $nice_plugin_name = null, $plugin_require_version = null ) {
+				if ( $plugin_require_version ) {
+					$this->should_check_plugin_versions = true;
+				}
 				$this->plugin_require[ $plugin_name ] = array(
 					self::PLUGIN_INFO_KEY_NAME      => $plugin_name,
 					self::PLUGIN_INFO_KEY_NICE_NAME => $nice_plugin_name === null ? $plugin_name : $nice_plugin_name,
@@ -214,7 +219,9 @@
 				$notices = $this->append_plugin_require_notices( $notices );
 				$notices = $this->append_module_require_notices( $notices );
 				$notices = $this->append_settings_require_notices( $notices );
-				$notices = $this->check_minimum_require_plugins_version_and_append_notices( $notices );
+				if ( $this->should_check_plugin_versions ) {
+					$notices = $this->check_minimum_require_plugins_version_and_append_notices( $notices );
+				}
 				
 				return $notices;
 			}
