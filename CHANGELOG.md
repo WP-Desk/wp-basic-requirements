@@ -1,3 +1,7 @@
+## [3.2.3] - 2020-10-05
+### Fixed
+- WC tested shows invalid info
+
 ## [3.2.2] - 2019-12-17
 ### Fixed
 - Plugin version should be checked only in needed
