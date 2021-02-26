@@ -427,6 +427,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 
 				$api                = new stdClass();
 				$api->name          = $plugin_info['nice_name']; // self in closures requires 5.4
+				$api->version       = '';
 				$api->download_link = esc_url( $plugin_info['repository_url'] ); // self in closures requires 5.4
 
 				return $api;
