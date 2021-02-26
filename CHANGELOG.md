@@ -1,3 +1,7 @@
+## [3.2.4] - 2021-02-26
+### Fixed
+- removed plugin version from plugin api 
+
 ## [3.2.3] - 2020-10-05
 ### Fixed
 - WC tested shows invalid info
