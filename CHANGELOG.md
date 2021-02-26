@@ -1,3 +1,7 @@
+## [3.2.5] - 2021-02-26
+### Fixed
+- PHP Notice:  Undefined property: stdClass::$version
+
 ## [3.2.4] - 2021-02-26
 ### Fixed
 - removed plugin version from plugin api 
