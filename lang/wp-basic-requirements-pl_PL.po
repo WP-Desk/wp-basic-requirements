@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WP Basic Requirements\n"
-"POT-Creation-Date: 2021-03-01 10:11+0100\n"
-"PO-Revision-Date: 2021-03-01 10:12+0100\n"
+"POT-Creation-Date: 2021-03-01 11:52+0100\n"
+"PO-Revision-Date: 2021-03-01 11:53+0100\n"
 "Last-Translator: Sebastian Pisula <sebastian.pisula@gmail.com>\n"
 "Language-Team: \n"
 "Language: pl_PL\n"
@@ -54,16 +54,16 @@ msgstr ""
 "Wtyczka &#8220;%s&#8221; nie może działać bez aktywacji OpenSSL co najmniej "
 "w wersji %s. Zaktualizuj wersję OpenSSL."
 
-#: Basic_Requirement_Checker.php:306
+#: Basic_Requirement_Checker.php:308
 #, php-format
 msgid ""
-"The &#8220;%s&#8221; plugin requires at least %s version of %s to work "
+"The &#8220;%1$s&#8221; plugin requires at least %2$s version of %3$s to work "
 "correctly. Please update it to its latest release."
 msgstr ""
-"Do poprawnego działania &#8220;%s&#8221; wymaga wtyczki %s co najmniej w "
-"wersji %s. Prosimy o wykonanie aktualizacji."
+"Do poprawnego działania wtyczki &#8220;%1$s&#8221; wymagana jest wtyczka "
+"%3$s w wersji co najmniej %2$s. Prosimy o wykonanie aktualizacji."
 
-#: Basic_Requirement_Checker.php:391
+#: Basic_Requirement_Checker.php:395
 #, php-format
 msgid ""
 "The &#8220;%s&#8221; plugin cannot run without %s active. Please install and "
@@ -72,7 +72,7 @@ msgstr ""
 "Wtyczka &#8220;%s&#8221; nie może działać bez aktywacji %s. Zainstaluj i "
 "aktywuj wtyczkę %s."
 
-#: Basic_Requirement_Checker.php:452
+#: Basic_Requirement_Checker.php:456
 #, php-format
 msgid ""
 "The &#8220;%s&#8221; plugin requires free %s plugin. <a href=\"%s\">Install "
@@ -81,7 +81,7 @@ msgstr ""
 "Wtyczka &#8220;%s&#8221; wymaga bezpłatnej wtyczki %s. <a href=\"%s"
 "\">Zainstaluj %s →</a>"
 
-#: Basic_Requirement_Checker.php:461
+#: Basic_Requirement_Checker.php:465
 #, php-format
 msgid ""
 "The &#8220;%s&#8221; plugin requires activating %s plugin. <a href=\"%s"
@@ -90,7 +90,7 @@ msgstr ""
 "Wtyczka &#8220;%s&#8221; wymaga aktywnej wtyczki %s. <a href=\"%s\">Aktywuj "
 "%s →</a>"
 
-#: Basic_Requirement_Checker.php:508
+#: Basic_Requirement_Checker.php:512
 #, php-format
 msgid ""
 "The &#8220;%s&#8221; plugin cannot run without %s php module installed. "
@@ -99,7 +99,7 @@ msgstr ""
 "Wtyczka &#8220;%s&#8221; nie może działać bez modułu php: %s. Skontaktuj się "
 "z administratorem hostingu i poproś o instalację %s."
 
-#: Basic_Requirement_Checker.php:536
+#: Basic_Requirement_Checker.php:540
 #, php-format
 msgid ""
 "The &#8220;%s&#8221; plugin cannot run without %s php setting set to %s. "
