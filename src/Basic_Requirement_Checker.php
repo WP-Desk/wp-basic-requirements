@@ -303,7 +303,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 			if ( count( $required_plugins ) > 0 ) {
 				foreach ( $required_plugins as $plugin ) {
 					if ( version_compare( $plugin['Version'], $plugin[ self::PLUGIN_INFO_APPEND_PLUGIN_DATA ], '<' ) ) {
-						$notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin requires at least %s version of %s to work correctly. Please update it to its latest release.',
+						$notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin requires at least %s version of %s to work correctly. Please update it',
 							$this->get_text_domain() ),
 							esc_html( $this->plugin_name ), $plugin[ self::PLUGIN_INFO_APPEND_PLUGIN_DATA ],
 							$plugin['Name'] ) );
