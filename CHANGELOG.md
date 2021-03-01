@@ -1,7 +1,3 @@
-## [3.2.6] - 2021-03-01
-### Fixed
-- Update message and translation
-
 ## [3.2.5] - 2021-02-26
 ### Fixed
 - PHP Notice:  Undefined property: stdClass::$version
