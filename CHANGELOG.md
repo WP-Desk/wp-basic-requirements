@@ -1,3 +1,7 @@
+## [3.3.0] - 2022-04-21
+### Added
+- classmap autoload
+
 ## [3.2.7] - 2021-03-01
 ### Fixed
 - Update message and translation

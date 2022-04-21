@@ -19,10 +19,10 @@
         "wimg/php-compatibility": "^8"
     },
     "autoload": {
-
+        "classmap": ["src"]
     },
     "autoload-dev": {
-        "classmap": ["src", "tests"]
+        "classmap": ["tests"]
     },
     "extra": {
         "text-domain": "wp-basic-requirements",
