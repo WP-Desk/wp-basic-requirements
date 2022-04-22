@@ -1,6 +1,6 @@
-## [3.3.0] - 2022-04-21
+## [3.2.8] - 2022-04-22
 ### Added
-- classmap autoload
+- __DIR__ for requires
 
 ## [3.2.7] - 2021-03-01
 ### Fixed
