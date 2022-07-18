@@ -1,7 +1,7 @@
 <?php
 
 if ( ! interface_exists( 'WPDesk_Requirement_Checker' ) ) {
-	require_once 'Requirement_Checker.php';
+	require_once __DIR__ . '/Requirement_Checker.php';
 }
 
 if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {

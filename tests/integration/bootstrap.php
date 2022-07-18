@@ -13,4 +13,4 @@ if ( getenv( 'PLUGIN_PATH' ) !== false ) {
 require_once( getenv( 'WP_DEVELOP_DIR' ) . '/tests/phpunit/includes/functions.php' );
 
 putenv('WP_TESTS_DIR=' . getenv( 'WP_DEVELOP_DIR' ) . '/tests/phpunit');
-require_once( getenv( 'WC_DEVELOP_DIR' ) . '/tests/bootstrap.php' );
+require_once( getenv( 'WC_DEVELOP_DIR' ) . '/tests/legacy/bootstrap.php' );

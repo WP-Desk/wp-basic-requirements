@@ -1,3 +1,7 @@
+## [3.2.8] - 2022-07-18
+### Added
+- __DIR__ for requires
+
 ## [3.2.7] - 2021-03-01
 ### Fixed
 - Update message and translation
