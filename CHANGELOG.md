@@ -1,3 +1,7 @@
+## [3.3.0] - 2022-08-09
+### Added
+- en_AU translators
+
 ## [3.2.8] - 2022-07-18
 ### Added
 - __DIR__ for requires

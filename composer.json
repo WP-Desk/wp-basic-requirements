@@ -28,7 +28,8 @@
         "text-domain": "wp-basic-requirements",
         "translations-folder": "lang",
         "po-files": {
-            "pl_PL": "wp-basic-requirements-pl_PL.po"
+            "pl_PL": "wp-basic-requirements-pl_PL.po",
+            "en_AU": "wp-basic-requirements-en_AU.po"
         }
     },
     "scripts": {
