@@ -30,6 +30,8 @@
         "po-files": {
             "pl_PL": "pl_PL.po",
             "en_AU": "en_AU.po",
+            "en_CA": "en_CA.po",
+            "en_GB": "en_GB.po",
             "de_DE": "de_DE.po"
         }
     },

@@ -1,4 +1,8 @@
-## [3.4.0] - 2022-08-22
+## [3.5.0] - 2022-08-16
+### Added
+- en_CA, en_GB translators
+ 
+## [3.4.0] - 2022-08-16
 ### Added
 - de_DE translators
 

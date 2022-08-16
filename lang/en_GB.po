@@ -1,0 +1,136 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Basic Requirements\n"
+"POT-Creation-Date: 2021-03-01 11:52+0100\n"
+"PO-Revision-Date: 2022-08-16 11:23+0200\n"
+"Last-Translator: Łukasz Spryszak <lukasz.spryszak@octolize.com>\n"
+"Language-Team: Łukasz Spryszak <lspryszak@gmail.com>\n"
+"Language: en_GB\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.1.1\n"
+"X-Poedit-Basepath: ../src\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;\"\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: Basic_Requirement_Checker.php:202
+#, php-format
+msgid ""
+"The &#8220;%s&#8221; plugin cannot run on PHP versions older than %s. Please "
+"contact your host and ask them to upgrade."
+msgstr ""
+"The &#8220;%s&#8221; plugin cannot run on PHP versions older than %s. Please "
+"contact your host and ask them to upgrade."
+
+#: Basic_Requirement_Checker.php:206
+#, php-format
+msgid ""
+"The &#8220;%s&#8221; plugin cannot run on WordPress versions older than %s. Please "
+"update WordPress."
+msgstr ""
+"The &#8220;%s&#8221; plugin cannot run on WordPress versions older than %s. Please "
+"update WordPress."
+
+#: Basic_Requirement_Checker.php:210
+#, php-format
+msgid ""
+"The &#8220;%s&#8221; plugin cannot run on WooCommerce versions older than %s. "
+"Please update WooCommerce."
+msgstr ""
+"The &#8220;%s&#8221; plugin cannot run on WooCommerce versions older than %s. "
+"Please update WooCommerce."
+
+#: Basic_Requirement_Checker.php:214
+#, php-format
+msgid ""
+"The &#8220;%s&#8221; plugin cannot run without OpenSSL module version at least %s. "
+"Please update OpenSSL module."
+msgstr ""
+"The &#8220;%s&#8221; plugin cannot run without OpenSSL module version at least %s. "
+"Please update OpenSSL module."
+
+#: Basic_Requirement_Checker.php:308
+#, php-format
+msgid ""
+"The &#8220;%1$s&#8221; plugin requires at least %2$s version of %3$s to work "
+"correctly. Please update it to its latest release."
+msgstr ""
+"The &#8220;%1$s&#8221; plugin requires at least %2$s version of %3$s to work "
+"correctly. Please update it to its latest release."
+
+#: Basic_Requirement_Checker.php:395
+#, php-format
+msgid ""
+"The &#8220;%s&#8221; plugin cannot run without %s active. Please install and "
+"activate %s plugin."
+msgstr ""
+"The &#8220;%s&#8221; plugin cannot run without %s active. Please install and "
+"activate %s plugin."
+
+#: Basic_Requirement_Checker.php:456
+#, php-format
+msgid ""
+"The &#8220;%s&#8221; plugin requires free %s plugin. <a href=\"%s\">Install %s →</a>"
+msgstr ""
+"The &#8220;%s&#8221; plugin requires free %s plugin. <a href=\"%s\">Install %s →</a>"
+
+#: Basic_Requirement_Checker.php:465
+#, php-format
+msgid ""
+"The &#8220;%s&#8221; plugin requires activating %s plugin. <a href=\"%s\">Activate "
+"%s →</a>"
+msgstr ""
+"The &#8220;%s&#8221; plugin requires activating %s plugin. <a href=\"%s\">Activate "
+"%s →</a>"
+
+#: Basic_Requirement_Checker.php:512
+#, php-format
+msgid ""
+"The &#8220;%s&#8221; plugin cannot run without %s PHP module installed. Please "
+"contact your host and ask them to install %s."
+msgstr ""
+"The &#8220;%s&#8221; plugin cannot run without %s PHP module installed. Please "
+"contact your host and ask them to install %s."
+
+#: Basic_Requirement_Checker.php:540
+#, php-format
+msgid ""
+"The &#8220;%s&#8221; plugin cannot run without %s PHP setting set to %s. Please "
+"contact your host and ask them to set %s."
+msgstr ""
+"The &#8220;%s&#8221; plugin cannot run without %s PHP setting set to %s. Please "
+"contact your host and ask them to set %s."
+
+#: Basic_Requirement_Checker_With_Update_Disable.php:27
+#, php-format
+msgid ""
+"The &#8220;%s&#8221; plugin is temporarily disabled since the required %s plugin is "
+"being upgraded."
+msgstr ""
+"The &#8220;%s&#8221; plugin is temporarily disabled since the required %s plugin is "
+"being upgraded."
+
+#~ msgid ""
+#~ "The &#8220;%s&#8221; plugin cannot start as there is a dependency conflict with "
+#~ "other existing plugin &#8220;%s&#8221;. Please upgrade all plugins to the most "
+#~ "recent version or disable the &#8220;%s&#8221; plugin."
+#~ msgstr ""
+#~ "Wtyczka &#8220;%s&#8221; nie może zostać uruchomiona, ponieważ powstał konflikt "
+#~ "zależności z już uruchomioną wtyczką &#8220;%s&#8221;. Proszę zaktualizuj "
+#~ "wtyczki do najnowszych wersji lub dezaktywuj wtyczkę &#8220;%s&#8221;."
+
+#~ msgid ""
+#~ "The &#8220;%s&#8221; plugin cannot start as there is a dependency conflict with "
+#~ "other existing plugin &#8220;%s&#8221;. The required version of dependency %s is "
+#~ "%s and the version used by plugin &#8220;%s&#8221; is %s. Please upgrade all "
+#~ "plugins to the most recent version or disable the &#8220;%s&#8221; plugin."
+#~ msgstr ""
+#~ "Plugin &#8220;%s&#8221; nie może zostać uruchomiony, ponieważ powstał konflikt "
+#~ "zależności z już uruchomionem pluginem &#8220;%s&#8221;. Wymagana wersja "
+#~ "zależności %s to %s, a wersja używana przez plugin &#8220;%s&#8221; to %s. "
+#~ "Proszę zaktualizuj pluginy do najnowszej wersji lub deaktywuj plugin &#8220;"
+#~ "%s&#8221;."
