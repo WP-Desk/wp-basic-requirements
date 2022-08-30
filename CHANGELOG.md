@@ -1,3 +1,7 @@
+## [3.5.1] - 2022-08-30
+### Fixed
+- de_DE translators
+
 ## [3.5.0] - 2022-08-16
 ### Added
 - en_CA, en_GB translators

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WP Basic Requirements\n"
 "POT-Creation-Date: 2021-03-01 11:52+0100\n"
-"PO-Revision-Date: 2022-08-12 19:41+0200\n"
+"PO-Revision-Date: 2022-08-26 20:32+0200\n"
 "Last-Translator: Łukasz Spryszak <lukasz.spryszak@octolize.com>\n"
 "Language-Team: Łukasz Spryszak <lspryszak@gmail.com>\n"
 "Language: de\n"
@@ -24,7 +24,7 @@ msgid ""
 "contact your host and ask them to upgrade."
 msgstr ""
 "Das &#8220;%s&#8221; Plugin kann nicht mit PHP-Versionen älter als %s ausgeführt "
-"werden. Bitte kontaktieren Sie Ihren Hoster und bitte ihn darum, ein Upgrade "
+"werden. Bitte kontaktiere deinen Hoster und bitte ihn darum, ein Upgrade "
 "durchzuführen."
 
 #: Basic_Requirement_Checker.php:206
@@ -34,7 +34,7 @@ msgid ""
 "update WordPress."
 msgstr ""
 "Das &#8220;%s&#8221; Plugin kann nicht auf WordPress-Versionen ausgeführt werden, "
-"die älter als %s sind. Bitte aktualisieren Sie WordPress."
+"die älter als %s sind. Bitte aktualisiere WordPress."
 
 #: Basic_Requirement_Checker.php:210
 #, php-format
@@ -43,7 +43,7 @@ msgid ""
 "Please update WooCommerce."
 msgstr ""
 "Das &#8220;%s&#8221; Plugin kann nicht auf WooCommerce-Versionen ausgeführt werden, "
-"die älter als %s sind. Bitte aktualisieren Sie WooCommerce."
+"die älter als %s sind. Bitte aktualisiere WooCommerce."
 
 #: Basic_Requirement_Checker.php:214
 #, php-format
@@ -52,7 +52,7 @@ msgid ""
 "Please update OpenSSL module."
 msgstr ""
 "Das &#8220;%s&#8221; Plugin kann nicht ohne mindestens %s OpenSSL-Modulversion "
-"ausgeführt werden. Bitte aktualisieren Sie das OpenSSL-Modul."
+"ausgeführt werden. Bitte aktualisiere das OpenSSL-Modul."
 
 #: Basic_Requirement_Checker.php:308
 #, php-format
@@ -61,7 +61,7 @@ msgid ""
 "correctly. Please update it to its latest release."
 msgstr ""
 "Das Plugin &#8220;%1$s&#8221; benötigt mindestens %2$s Version von %3$s, um korrekt "
-"zu funktionieren. Bitte aktualisieren Sie es auf die neueste Version."
+"zu funktionieren. Bitte aktualisiere es auf die neueste Version."
 
 #: Basic_Requirement_Checker.php:395
 #, php-format
@@ -70,7 +70,7 @@ msgid ""
 "activate %s plugin."
 msgstr ""
 "Das &#8220;%s&#8221; Plugin kann nicht ohne aktives %s ausgeführt werden. Bitte "
-"installieren und aktivieren Sie das %s Plugin."
+"installiere und aktiviere das %s Plugin."
 
 #: Basic_Requirement_Checker.php:456
 #, php-format
@@ -78,7 +78,7 @@ msgid ""
 "The &#8220;%s&#8221; plugin requires free %s plugin. <a href=\"%s\">Install %s →</a>"
 msgstr ""
 "Das &#8220;%s&#8221; Plugin erfordert ein kostenloses %s Plugin. <a href=\"%s"
-"\">Installieren Sie %s →</a>"
+"\">Installiere %s →</a>"
 
 #: Basic_Requirement_Checker.php:465
 #, php-format
@@ -87,7 +87,7 @@ msgid ""
 "%s →</a>"
 msgstr ""
 "Das &#8220;%s&#8221; Plugin erfordert die Aktivierung des %s Plugins. <a href=\"%s"
-"\">Aktivieren Sie %s →</a>"
+"\">Aktiviere %s →</a>"
 
 #: Basic_Requirement_Checker.php:512
 #, php-format
@@ -96,7 +96,7 @@ msgid ""
 "contact your host and ask them to install %s."
 msgstr ""
 "Das &#8220;%s&#8221; Plugin kann nicht laufen, wenn kein %s PHP-Modul installiert "
-"ist. Bitte kontaktieren Sie Ihren Hoster und bitten Sie ihn, %s zu installieren."
+"ist. Bitte kontaktiere deinen Hoster und bitte ihn, %s zu installieren."
 
 #: Basic_Requirement_Checker.php:540
 #, php-format
@@ -104,8 +104,8 @@ msgid ""
 "The &#8220;%s&#8221; plugin cannot run without %s PHP setting set to %s. Please "
 "contact your host and ask them to set %s."
 msgstr ""
-"Das &#8220;%s&#8221; Plugin kann nicht laufen, wenn die %s PHP-Einstellung auf %s "
-"gesetzt ist. Bitte kontaktieren Sie Ihren Hoster und bitten Sie ihn, %s zu setzen."
+"Das &#8220;%s&#8221; Plugin kann nicht laufen ohne die %s PHP-Einstellung auf %s zu "
+"setzen. Bitte kontaktiere deinen Hoster und bitte ihn, %s zu setzen."
 
 #: Basic_Requirement_Checker_With_Update_Disable.php:27
 #, php-format
