@@ -74,20 +74,20 @@ msgstr ""
 #: Basic_Requirement_Checker.php:456
 #, php-format
 msgid ""
-"The &#8220;%s&#8221; plugin requires free %s plugin. <a href=\"%s\">Install %s "
-"→</a>"
+"The &#8220;%s&#8221; plugin requires free %s plugin. <a href=\"%s\">Install %s"
+"</a>"
 msgstr ""
-"The &#8220;%s&#8221; plugin requires free %s plugin. <a href=\"%s\">Install %s "
-"→</a>"
+"The &#8220;%s&#8221; plugin requires free %s plugin. <a href=\"%s\">Install %s"
+"</a>"
 
 #: Basic_Requirement_Checker.php:465
 #, php-format
 msgid ""
 "The &#8220;%s&#8221; plugin requires activating %s plugin. <a href=\"%s"
-"\">Activate %s →</a>"
+"\">Activate %s</a>"
 msgstr ""
 "The &#8220;%s&#8221; plugin requires activating %s plugin. <a href=\"%s"
-"\">Activate %s →</a>"
+"\">Activate %s</a>"
 
 #: Basic_Requirement_Checker.php:512
 #, php-format
