@@ -1,3 +1,9 @@
+## [Unreleased]
+
+### Changed
+
+- Removed arrows from user-facing messages.
+
 ## [3.5.1] - 2022-08-30
 ### Fixed
 - de_DE translators
