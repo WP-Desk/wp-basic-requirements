@@ -21,9 +21,10 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		const PLUGIN_INFO_FAKE_REQUIRED_MINIMUM_VERSION = '0.0';
 		const PLUGIN_INFO_APPEND_PLUGIN_DATA = 'required_version';
 		const PLUGIN_INFO_TRANSIENT_NAME = 'require_plugins_data';
-		const PLUGIN_INFO_TRANSIENT_EXPIRATION_TIME = 16;
+        const EXPIRATION_TRANSIENT_NAME = 'require_plugins_data_exp';
+        const CACHE_TIME = 300;
 
-		/** @var string */
+        /** @var string */
 		protected $plugin_name;
 		/** @var string */
 		private $plugin_file;
@@ -324,29 +325,32 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		 * @return array In format [ 'plugindir/pluginfile.php' => ['Name' => 'Plugin Name', 'Version' => '1.0.1', ...],  ]
 		 */
 		private static function retrieve_plugins_data_in_transient() {
-			static $never_executed = true;
-			if ( $never_executed ) {
-				$never_executed = false;
-				/** Required when WC starts later and these data should be in cache */
-				add_filter( 'extra_plugin_headers', function ( $headers = array() ) {
-					$headers[] = 'WC tested up to';
-					$headers[] = 'WC requires at least';
-					$headers[] = 'Woo';
-
-					return array_unique( $headers );
-				} );
-			}
-
+            $current_time = time();
 			$plugins = get_transient( self::PLUGIN_INFO_TRANSIENT_NAME );
+            $expiration_time = get_transient( self::EXPIRATION_TRANSIENT_NAME );
+            $is_expired = ! $expiration_time || $current_time > $expiration_time;
 
-			if ( $plugins === false ) {
+			if ( $plugins === false || $is_expired ) {
+                static $never_executed = true;
+                if ( $never_executed ) {
+                    $never_executed = false;
+                    /** Required when WC starts later and these data should be in cache */
+                    add_filter( 'extra_plugin_headers', function ( $headers = array() ) {
+                        $headers[] = 'WC tested up to';
+                        $headers[] = 'WC requires at least';
+                        $headers[] = 'Woo';
+
+                        return array_unique( $headers );
+                    } );
+                }
+
 				if ( ! function_exists( 'get_plugins' ) ) {
 					require_once ABSPATH . '/wp-admin/includes/plugin.php';
 				}
 
 				$plugins = function_exists( 'get_plugins' ) ? get_plugins() : array();
-				set_transient( self::PLUGIN_INFO_TRANSIENT_NAME, $plugins,
-					self::PLUGIN_INFO_TRANSIENT_EXPIRATION_TIME );
+				set_transient( self::PLUGIN_INFO_TRANSIENT_NAME, $plugins, 0 );
+                set_transient( self::EXPIRATION_TRANSIENT_NAME, $current_time + self::CACHE_TIME , 0 );
 			}
 
 			return $plugins;
@@ -615,6 +619,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		 */
 		public function handle_transient_delete_action() {
 			delete_transient( self::PLUGIN_INFO_TRANSIENT_NAME );
+            delete_transient( self::EXPIRATION_TRANSIENT_NAME );
 		}
 
 		/**
