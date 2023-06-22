@@ -41,6 +41,8 @@
 			WP_Mock::passthruFunction( 'wp_nonce_url' );
 			WP_Mock::passthruFunction( 'wp_create_nonce' );
 			WP_Mock::passthruFunction( 'admin_url' );
+
+			WP_Mock::wpFunction( 'wp_using_ext_object_cache')->andReturn( true );
 			
 			$this->assertFalse( $checker->are_requirements_met(), '2 plugins required and there should be none activated' );
 			
