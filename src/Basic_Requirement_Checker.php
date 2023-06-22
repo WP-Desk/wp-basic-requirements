@@ -29,9 +29,9 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 
 		const PLUGIN_INFO_APPEND_PLUGIN_DATA = 'required_version';
 
-		const PLUGIN_INFO_TRANSIENT_NAME = 'require_plugins_data';
+		const PLUGIN_INFO_TRANSIENT_NAME = 'wpdesk_plugins_data';
 
-		const EXPIRATION_TRANSIENT_NAME = 'require_plugins_data_exp';
+		const EXPIRATION_TRANSIENT_NAME = 'wpdesk_plugins_data_exp';
 
 		const CACHE_TIME = 300;
 
