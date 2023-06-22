@@ -48,16 +48,16 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		private $min_wp_version;
 
 		/** @var string|null */
-		private $min_wc_version = NULL;
+		private $min_wc_version = null;
 
 		/** @var int|null */
-		private $min_openssl_version = NULL;
+		private $min_openssl_version = null;
 
 		/** @var array */
 		protected $plugin_require;
 
 		/** @var bool */
-		protected $should_check_plugin_versions = FALSE;
+		protected $should_check_plugin_versions = false;
 
 		/** @var array */
 		private $module_require;
@@ -143,14 +143,14 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		 *
 		 * @return $this
 		 */
-		public function add_plugin_require( $plugin_name, $nice_plugin_name = NULL, $plugin_require_version = NULL ) {
+		public function add_plugin_require( $plugin_name, $nice_plugin_name = null, $plugin_require_version = null ) {
 			if ( $plugin_require_version ) {
-				$this->should_check_plugin_versions = TRUE;
+				$this->should_check_plugin_versions = true;
 			}
 			$this->plugin_require[ $plugin_name ] = array(
 				self::PLUGIN_INFO_KEY_NAME      => $plugin_name,
-				self::PLUGIN_INFO_KEY_NICE_NAME => $nice_plugin_name === NULL ? $plugin_name : $nice_plugin_name,
-				self::PLUGIN_INFO_VERSION       => $plugin_require_version === NULL ?
+				self::PLUGIN_INFO_KEY_NICE_NAME => $nice_plugin_name === null ? $plugin_name : $nice_plugin_name,
+				self::PLUGIN_INFO_VERSION       => $plugin_require_version === null ?
 					self::PLUGIN_INFO_FAKE_REQUIRED_MINIMUM_VERSION : $plugin_require_version,
 			);
 
@@ -166,12 +166,12 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		 *
 		 * @return $this
 		 */
-		public function add_plugin_repository_require( $plugin_name, $version, $nice_plugin_name = NULL ) {
+		public function add_plugin_repository_require( $plugin_name, $version, $nice_plugin_name = null ) {
 			$this->plugin_require[ $plugin_name ] = array(
 				self::PLUGIN_INFO_KEY_NAME      => $plugin_name,
 				self::PLUGIN_INFO_VERSION       => $version,
 				'repository_url'                => 'http://downloads.wordpress.org/plugin/' . dirname( $plugin_name ) . '.latest-stable.zip',
-				self::PLUGIN_INFO_KEY_NICE_NAME => $nice_plugin_name === NULL ? $plugin_name : $nice_plugin_name
+				self::PLUGIN_INFO_KEY_NICE_NAME => $nice_plugin_name === null ? $plugin_name : $nice_plugin_name
 			);
 
 			return $this;
@@ -183,8 +183,8 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		 *
 		 * @return $this
 		 */
-		public function add_php_module_require( $module_name, $nice_name = NULL ) {
-			if ( $nice_name === NULL ) {
+		public function add_php_module_require( $module_name, $nice_name = null ) {
+			if ( $nice_name === null ) {
 				$this->module_require[ $module_name ] = $module_name;
 			} else {
 				$this->module_require[ $module_name ] = $nice_name;
@@ -229,11 +229,11 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 				$notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin cannot run on WordPress versions older than %s. Please update WordPress.',
 					$this->get_text_domain() ), esc_html( $this->plugin_name ), $this->min_wp_version ) );
 			}
-			if ( $this->min_wc_version !== NULL && $this->can_check_plugin_version() && ! self::is_wc_at_least( $this->min_wc_version ) ) {
+			if ( $this->min_wc_version !== null && $this->can_check_plugin_version() && ! self::is_wc_at_least( $this->min_wc_version ) ) {
 				$notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin cannot run on WooCommerce versions older than %s. Please update WooCommerce.',
 					$this->get_text_domain() ), esc_html( $this->plugin_name ), $this->min_wc_version ) );
 			}
-			if ( $this->min_openssl_version !== NULL && ! self::is_open_ssl_at_least( $this->min_openssl_version ) ) {
+			if ( $this->min_openssl_version !== null && ! self::is_open_ssl_at_least( $this->min_openssl_version ) ) {
 				$notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin cannot run without OpenSSL module version at least %s. Please update OpenSSL module.',
 					$this->get_text_domain() ), esc_html( $this->plugin_name ),
 					'0x' . dechex( $this->min_openssl_version ) ) );
@@ -352,10 +352,10 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 			$expiration_time = get_transient( self::EXPIRATION_TRANSIENT_NAME );
 			$is_expired      = ! $expiration_time || $current_time > $expiration_time;
 
-			if ( $plugins === FALSE || $is_expired ) {
-				static $never_executed = TRUE;
+			if ( $plugins === false || $is_expired ) {
+				static $never_executed = true;
 				if ( $never_executed ) {
-					$never_executed = FALSE;
+					$never_executed = false;
 					/** Required when WC starts later and these data should be in cache */
 					add_filter( 'extra_plugin_headers', function( $headers = array() ) {
 						$headers[] = 'WC tested up to';
@@ -413,7 +413,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		private function append_plugin_require_notices( $notices ) {
 			if ( count( $this->plugin_require ) > 0 ) {
 				foreach ( $this->plugin_require as $plugin_name => $plugin_info ) {
-					$notice = NULL;
+					$notice = null;
 					if ( isset( $plugin_info['repository_url'] ) ) {
 						$notice = $this->prepare_plugin_repository_require_notice( $plugin_info );
 					} elseif ( ! self::is_wp_plugin_active( $plugin_name ) ) {
@@ -423,7 +423,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 							esc_html( basename( $plugin_info[ self::PLUGIN_INFO_KEY_NICE_NAME ] ) ) ) );
 					}
 
-					if ( $notice !== NULL ) {
+					if ( $notice !== null ) {
 						$notices[] = $notice;
 					}
 				}
@@ -447,7 +447,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 			}
 			add_filter( 'plugins_api', function( $api, $action, $args ) use ( $plugin_info, $slug ) {
 				if ( 'plugin_information' !== $action ||
-				     FALSE !== $api ||
+				     false !== $api ||
 				     ! isset( $args->slug ) ||
 				     $slug !== $args->slug
 				) {
@@ -492,7 +492,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 					$this->plugin_name, $nice_name, esc_url( admin_url( $activate_url ) ), $nice_name ) );
 			}
 
-			return NULL;
+			return null;
 		}
 
 		/**
