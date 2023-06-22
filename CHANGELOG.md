@@ -1,7 +1,9 @@
-## [3.5.2] - 2023-02-10
-
+## [3.6.0] - 2023-06-22
 ### Changed
+- Plugin info transient changed to auto loaded option (expiration 0) 
 
+## [3.5.2] - 2023-02-10
+### Changed
 - Removed arrows from user-facing messages.
 
 ## [3.5.1] - 2022-08-30

@@ -25,7 +25,9 @@
 			
 			WP_Mock::wpFunction( 'get_locale' )
 			       ->andReturn( $existing_locale );
-			
+
+			WP_Mock::wpFunction( 'wp_using_ext_object_cache')->andReturn( true );
+
 			$factory = new WPDesk_Basic_Requirement_Checker_Factory();
 			$checker = $factory->create_from_requirement_array( 'whatever', 'whatever', $requirements );
 			
@@ -41,7 +43,7 @@
 			WP_Mock::passthruFunction( 'wp_nonce_url' );
 			WP_Mock::passthruFunction( 'wp_create_nonce' );
 			WP_Mock::passthruFunction( 'admin_url' );
-			
+
 			$this->assertFalse( $checker->are_requirements_met(), '2 plugins required and there should be none activated' );
 			
 			$this->expectOutputRegex( '/Flexible Checkout Fields/' );
