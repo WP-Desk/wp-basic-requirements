@@ -44,7 +44,8 @@
 				$plugin_name,
 				$text_domain,
 				$requirements['php'],
-				$requirements['wp']
+				$requirements['wp'],
+				(bool) wp_using_ext_object_cache()
 			);
 
 			if ( isset( $requirements['plugins'] ) ) {

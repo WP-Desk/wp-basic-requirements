@@ -70,6 +70,10 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 
 		/** @var @string */
 		private $text_domain;
+		/**
+		 * @var mixed|true
+		 */
+		private $use_transients;
 
 		/**
 		 * @param string $plugin_file
@@ -77,11 +81,13 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		 * @param string $text_domain
 		 * @param string $php_version
 		 * @param string $wp_version
+		 * @param bool   $use_transients
 		 */
-		public function __construct( $plugin_file, $plugin_name, $text_domain, $php_version, $wp_version ) {
-			$this->plugin_file = $plugin_file;
-			$this->plugin_name = $plugin_name;
-			$this->text_domain = $text_domain;
+		public function __construct( $plugin_file, $plugin_name, $text_domain, $php_version, $wp_version, $use_transients = true ) {
+			$this->plugin_file    = $plugin_file;
+			$this->plugin_name    = $plugin_name;
+			$this->text_domain    = $text_domain;
+			$this->use_transients = $use_transients;
 
 			$this->set_min_php_require( $php_version );
 			$this->set_min_wp_require( $wp_version );
@@ -344,13 +350,20 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		/**
 		 * Check the plugins directory and retrieve all plugin files with plugin data.
 		 *
+		 * @param bool $use_transients
+		 *
 		 * @return array In format [ 'plugindir/pluginfile.php' => ['Name' => 'Plugin Name', 'Version' => '1.0.1', ...],  ]
 		 */
-		private static function retrieve_plugins_data_in_transient() {
+		private static function retrieve_plugins_data_in_transient( $use_transients = true ) {
 			$current_time    = time();
-			$plugins         = get_transient( self::PLUGIN_INFO_TRANSIENT_NAME );
-			$expiration_time = get_transient( self::EXPIRATION_TRANSIENT_NAME );
-			$is_expired      = ! $expiration_time || $current_time > $expiration_time;
+			if ( $use_transients) {
+				$plugins         = get_transient( self::PLUGIN_INFO_TRANSIENT_NAME );
+				$expiration_time = get_transient( self::EXPIRATION_TRANSIENT_NAME );
+			} else {
+				$plugins         = get_option( self::PLUGIN_INFO_TRANSIENT_NAME );
+				$expiration_time = get_option( self::EXPIRATION_TRANSIENT_NAME );
+			}
+			$is_expired = ! $expiration_time || $current_time > $expiration_time;
 
 			if ( $plugins === false || $is_expired ) {
 				static $never_executed = true;
@@ -371,8 +384,13 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 				}
 
 				$plugins = function_exists( 'get_plugins' ) ? get_plugins() : array();
-				set_transient( self::PLUGIN_INFO_TRANSIENT_NAME, $plugins, 0 );
-				set_transient( self::EXPIRATION_TRANSIENT_NAME, $current_time + self::CACHE_TIME, 0 );
+				if ( $use_transients ) {
+					set_transient( self::PLUGIN_INFO_TRANSIENT_NAME, $plugins, 0 );
+					set_transient( self::EXPIRATION_TRANSIENT_NAME, $current_time + self::CACHE_TIME, 0 );
+				} else {
+					update_option( self::PLUGIN_INFO_TRANSIENT_NAME, $plugins );
+					update_option( self::EXPIRATION_TRANSIENT_NAME, $current_time + self::CACHE_TIME );
+				}
 			}
 
 			return $plugins;
@@ -385,7 +403,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		 */
 		private function retrieve_required_plugins_data() {
 			$require_plugins = array();
-			$plugins         = self::retrieve_plugins_data_in_transient();
+			$plugins         = self::retrieve_plugins_data_in_transient( $this->use_transients );
 			if ( is_array( $plugins ) ) {
 				if ( count( $plugins ) > 0 ) {
 					if ( ! empty( $this->plugin_require ) ) {
@@ -475,7 +493,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 			$nice_name = $plugin_info[ self::PLUGIN_INFO_KEY_NICE_NAME ];
 
 			if ( ! self::is_wp_plugin_active( $name ) ) {
-				if ( ! self::is_wp_plugin_installed( $name ) ) {
+				if ( ! self::is_wp_plugin_installed( $name, $this->use_transients ) ) {
 					$install_url = $this->prepare_plugin_repository_install_url( $plugin_info );
 
 					return $this->prepare_notice_message( sprintf( wp_kses( __( 'The &#8220;%s&#8221; plugin requires free %s plugin. <a href="%s">Install %s</a>',
@@ -516,11 +534,12 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		 * Checks if plugin is installed. Needs to be enabled in deferred way.
 		 *
 		 * @param string $plugin_file
+		 * @param bool   $use_transients
 		 *
 		 * @return bool
 		 */
-		public static function is_wp_plugin_installed( $plugin_file ) {
-			$plugins_data = self::retrieve_plugins_data_in_transient();
+		public static function is_wp_plugin_installed( $plugin_file, $use_transients = false ) {
+			$plugins_data = self::retrieve_plugins_data_in_transient( $use_transients );
 
 			return array_key_exists( $plugin_file, (array) $plugins_data );
 		}
@@ -628,7 +647,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 			if ( isset( $this->plugin_file ) ) {
 				deactivate_plugins( plugin_basename( $this->plugin_file ) );
 
-				delete_transient( self::PLUGIN_INFO_TRANSIENT_NAME );
+				$this->clear_plugin_info_data();
 			}
 		}
 
@@ -640,11 +659,11 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		public function transient_delete_on_plugin_version_changed() {
 			add_action( self::HOOK_PLUGIN_DEACTIVATED_ACTION, array(
 				$this,
-				'handle_transient_delete_action'
+				'clear_plugin_info_data'
 			) );
 			add_action( self::HOOK_PLUGIN_ACTIVATED_ACTION, array(
 				$this,
-				'handle_transient_delete_action'
+				'clear_plugin_info_data'
 			) );
 		}
 
@@ -653,9 +672,11 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		 *
 		 * @return void
 		 */
-		public function handle_transient_delete_action() {
+		public function clear_plugin_info_data() {
 			delete_transient( self::PLUGIN_INFO_TRANSIENT_NAME );
 			delete_transient( self::EXPIRATION_TRANSIENT_NAME );
+			delete_option( self::PLUGIN_INFO_TRANSIENT_NAME );
+			delete_option( self::EXPIRATION_TRANSIENT_NAME );
 		}
 
 		/**
