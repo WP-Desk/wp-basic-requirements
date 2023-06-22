@@ -29,11 +29,13 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 
 		const PLUGIN_INFO_APPEND_PLUGIN_DATA = 'required_version';
 
-		const PLUGIN_INFO_TRANSIENT_NAME = 'wpdesk_plugins_data';
+		const PLUGIN_INFO_TRANSIENT_NAME = 'wpdesk_requirements_plugins_data';
 
-		const EXPIRATION_TRANSIENT_NAME = 'wpdesk_plugins_data_exp';
+		const CACHE_TIME = 16;
 
-		const CACHE_TIME = 300;
+		const EXPIRATION_TIME = 'expiration_time';
+
+		const PLUGINS = 'plugins';
 
 		/** @var string */
 		protected $plugin_name;
@@ -355,17 +357,10 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		 * @return array In format [ 'plugindir/pluginfile.php' => ['Name' => 'Plugin Name', 'Version' => '1.0.1', ...],  ]
 		 */
 		private static function retrieve_plugins_data_in_transient( $use_transients = true ) {
-			$current_time    = time();
-			if ( $use_transients) {
-				$plugins         = get_transient( self::PLUGIN_INFO_TRANSIENT_NAME );
-				$expiration_time = get_transient( self::EXPIRATION_TRANSIENT_NAME );
-			} else {
-				$plugins         = get_option( self::PLUGIN_INFO_TRANSIENT_NAME );
-				$expiration_time = get_option( self::EXPIRATION_TRANSIENT_NAME );
-			}
-			$is_expired = ! $expiration_time || $current_time > $expiration_time;
+			$current_time = time();
+			$plugins = self::get_plugins_data_from_cache( $use_transients, $current_time );
 
-			if ( $plugins === false || $is_expired ) {
+			if ( $plugins === false ) {
 				static $never_executed = true;
 				if ( $never_executed ) {
 					$never_executed = false;
@@ -384,16 +379,49 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 				}
 
 				$plugins = function_exists( 'get_plugins' ) ? get_plugins() : array();
-				if ( $use_transients ) {
-					set_transient( self::PLUGIN_INFO_TRANSIENT_NAME, $plugins, 0 );
-					set_transient( self::EXPIRATION_TRANSIENT_NAME, $current_time + self::CACHE_TIME, 0 );
-				} else {
-					update_option( self::PLUGIN_INFO_TRANSIENT_NAME, $plugins );
-					update_option( self::EXPIRATION_TRANSIENT_NAME, $current_time + self::CACHE_TIME );
-				}
+
+				self::update_plugins_data_in_cache( $plugins, $use_transients, $current_time );
 			}
 
 			return $plugins;
+		}
+
+		/**
+		 * @param bool $use_transients
+		 * @param int $current_time
+		 *
+		 * @return array|false
+		 */
+		private static function get_plugins_data_from_cache( $use_transients, $current_time ) {
+			if ( $use_transients ) {
+				return get_transient( self::PLUGIN_INFO_TRANSIENT_NAME );
+			} else {
+				$plugins_option_value = get_option( self::PLUGIN_INFO_TRANSIENT_NAME );
+				if ( is_array( $plugins_option_value )
+				     && isset( $plugins_option_value[ self::EXPIRATION_TIME ], $plugins_option_value[ self::PLUGINS ] )
+				     && (int) $plugins_option_value[ self::EXPIRATION_TIME ] > $current_time
+				) {
+					return $plugins_option_value[ self::PLUGINS ];
+				}
+			}
+
+			return false;
+		}
+
+		/**
+		 * @param array $plugins
+		 * @param bool $use_transients
+		 * @param int $current_time
+		 */
+		private static function update_plugins_data_in_cache( $plugins, $use_transients, $current_time ) {
+			if ( $use_transients ) {
+				set_transient( self::PLUGIN_INFO_TRANSIENT_NAME, $plugins, self::CACHE_TIME );
+			} else {
+				update_option( self::PLUGIN_INFO_TRANSIENT_NAME, array(
+					self::EXPIRATION_TIME => $current_time + self::CACHE_TIME,
+					self::PLUGINS         => $plugins,
+				) );
+			}
 		}
 
 		/**
@@ -674,9 +702,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		 */
 		public function clear_plugin_info_data() {
 			delete_transient( self::PLUGIN_INFO_TRANSIENT_NAME );
-			delete_transient( self::EXPIRATION_TRANSIENT_NAME );
 			delete_option( self::PLUGIN_INFO_TRANSIENT_NAME );
-			delete_option( self::EXPIRATION_TRANSIENT_NAME );
 		}
 
 		/**

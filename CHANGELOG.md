@@ -1,6 +1,6 @@
-## [3.6.0] - 2023-06-22
+## [3.6.1] - 2023-06-22
 ### Changed
-- Plugin info transient changed to auto loaded option (expiration 0) 
+- Plugin info transient changed to auto loaded option 
 
 ## [3.5.2] - 2023-02-10
 ### Changed
