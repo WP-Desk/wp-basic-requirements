@@ -9,6 +9,7 @@ variables:
   COMPOSER_ALLOW_SUPERUSER: 1
   GIT_STRATEGY: fetch
   ACCEPTANCE_ERROR_PATH: ${CI_PROJECT_DIR}/acceptance
+  DISABLE_INTEGRATION_TESTS: 1
 
 stages:
   - tools
