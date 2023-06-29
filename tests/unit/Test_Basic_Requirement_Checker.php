@@ -17,7 +17,7 @@
 		
 		const ALWAYS_FUNCTION_EXISTS = 'function_exists';
 		
-		public function setUp() {
+		public function setUp(): void {
 			WP_Mock::setUp();
 			
 			WP_Mock::wpFunction( 'get_bloginfo' )
@@ -33,7 +33,7 @@
 					->andReturn( self::ALWAYS_FUNCTION_EXISTS );
 		}
 		
-		public function tearDown() {
+		public function tearDown(): void {
 			WP_Mock::tearDown();
 		}
 		

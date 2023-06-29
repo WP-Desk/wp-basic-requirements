@@ -1,3 +1,7 @@
+## [3.6.2] - 2023-06-29
+### Fixed
+- Exact comparison for X.Y.Z semver version doesn't result in notices when the required version is met. Previously, requiring plugin in 1.1.1 version and activating dependend plugin in such version would result in admin notice and disabling the plugin, actually letting to use the plugin only from 1.1.2 version.
+
 ## [3.6.1] - 2023-06-22
 ### Changed
 - Plugin info transient changed to auto loaded option 

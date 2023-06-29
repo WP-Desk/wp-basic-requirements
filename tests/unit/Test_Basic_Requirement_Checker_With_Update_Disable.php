@@ -7,14 +7,14 @@ class Test_Basic_Requirement_Checker_With_Update_Disable extends PHPUnit\Framewo
 	const ALWAYS_VALID_WP_VERSION = '4.0';
 	const RANDOM_PLUGIN_TEXTDOMAIN = 'text';
 
-	public function setUp() {
+	public function setUp(): void {
 		WP_Mock::setUp();
 
 		WP_Mock::wpFunction( 'get_bloginfo' )
 		       ->andReturn( self::ALWAYS_VALID_WP_VERSION );
 	}
 
-	public function tearDown() {
+	public function tearDown(): void {
 		WP_Mock::tearDown();
 	}
 
