@@ -1,3 +1,7 @@
+## [3.7.0] - 2025-05-16
+### Fixed
+- Remove of the plugin_api filter as prohibited for use in the plugin review.
+
 ## [3.6.3] - 2024-04-16
 ### Fixed
 - Prevent error notice
