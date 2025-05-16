@@ -1,4 +1,4 @@
-## [3.7.0] 
+## [3.7.0] - 2025-05-16
 ### Fixed
 - Remove of the plugin_api filter as prohibited for use in the plugin review.
 
