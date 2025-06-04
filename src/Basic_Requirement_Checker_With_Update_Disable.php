@@ -25,7 +25,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker_With_Update_Disable' ) ) 
 				if ( $this->is_currently_updated( $name ) ) {
 					$nice_name       = $plugin_info[ self::PLUGIN_INFO_KEY_NICE_NAME ];
 					$this->notices[] = $this->prepare_notice_message( sprintf( __( 'The &#8220;%s&#8221; plugin is temporarily disabled since the required %s plugin is being upgraded.',
-						$this->get_text_domain() ),
+						"wp-basic-requirements" ),
 						$this->plugin_name, $nice_name, $nice_name ) );
 				}
 			}
