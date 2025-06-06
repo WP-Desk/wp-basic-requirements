@@ -698,7 +698,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		 */
 		public function handle_render_notices_action() {
 			foreach ( $this->notices as $notice ) {
-				echo $notice;
+				echo wp_kses_post( $notice );
 			}
 		}
 
