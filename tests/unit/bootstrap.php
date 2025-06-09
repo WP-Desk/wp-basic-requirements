@@ -21,3 +21,9 @@ if ( getenv( 'ABSPATH' ) !== false ) {
 
 WP_Mock::setUsePatchwork( true );
 WP_Mock::bootstrap();
+
+if (!function_exists('wp_kses_post')) {
+    function wp_kses_post($data) {
+        return htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
+    }
+}
