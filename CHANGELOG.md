@@ -1,3 +1,8 @@
+## [3.7.1] - 2025-06-06
+### Fixed
+- Replace text domain.
+- Add escaping function.
+
 ## [3.7.0] - 2025-05-16
 ### Fixed
 - Remove of the plugin_api filter as prohibited for use in the plugin review.
