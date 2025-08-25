@@ -1,3 +1,7 @@
+## [3.7.2] - 2025-08-25
+### Fixed
+- Plugin slug for a repository install link
+
 ## [3.7.1] - 2025-06-06
 ### Fixed
 - Replace text domain.

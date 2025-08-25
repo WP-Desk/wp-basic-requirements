@@ -486,14 +486,14 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		 * @return string
 		 */
 		private function prepare_plugin_repository_install_url( $plugin_info ) {
-			$slug        = basename( $plugin_info[ self::PLUGIN_INFO_KEY_NAME ] );
+			$slug        = basename( explode( '/', $plugin_info[ self::PLUGIN_INFO_KEY_NAME ] )[0] );
 			$install_url = self_admin_url( 'update.php?action=install-plugin&plugin=' . $slug );
 			if ( function_exists( 'wp_nonce_url' ) && function_exists( 'wp_create_nonce' ) ) {
 				$install_url = wp_nonce_url( $install_url, 'install-plugin_' . $slug );
 			}
 
 			return $install_url;
-		}
+        }
 
 		/**
 		 * @param array $plugin_info Internal required plugin info data.
