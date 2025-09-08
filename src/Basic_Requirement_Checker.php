@@ -197,12 +197,12 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
          *
          * @return $this
          *
-        */
+         */
 		public function add_class_require( $class_name, $plugin_nice_name ) {
-            $this->class_require[$class_name] = $plugin_nice_name;
+			$this->class_require[$class_name] = $plugin_nice_name;
 
-            return $this;
-        }
+			return $this;
+		}
 
         /**
 		 * @param string $module_name
