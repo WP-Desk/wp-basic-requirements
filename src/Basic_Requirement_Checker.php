@@ -190,14 +190,14 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		}
 
 		/**
-         * Add a class to require list.
-         *
-         * @param string $class_name       Name of the class.
-         * @param string $plugin_nice_name Nice plugin name for better looks in notice.
-         *
-         * @return $this
-         *
-         */
+		 * Add a class to require list.
+		 *
+		 * @param string $class_name       Name of the class.
+		 * @param string $plugin_nice_name Nice plugin name for better looks in notice.
+		 *
+		 * @return $this
+		 *
+		 */
 		public function add_class_require( $class_name, $plugin_nice_name ) {
 			$this->class_require[$class_name] = $plugin_nice_name;
 
@@ -269,7 +269,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 			$notices = $this->append_plugin_require_notices( $notices );
 			$notices = $this->append_module_require_notices( $notices );
 			$notices = $this->append_settings_require_notices( $notices );
-            $notices = $this->append_class_require_notices( $notices );
+			$notices = $this->append_class_require_notices( $notices );
 			if ( $this->should_check_plugin_versions ) {
 				$notices = $this->check_minimum_require_plugins_version_and_append_notices( $notices );
 			}
