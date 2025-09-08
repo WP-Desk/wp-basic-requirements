@@ -503,7 +503,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		 *
 		 * @return array
 		 */
-        private function append_class_require_notices( $notices ) {
+		private function append_class_require_notices( $notices ) {
 			if ( count( $this->class_require ) > 0 ) {
 				foreach ( $this->class_require as $class_name => $plugin_nice_name ) {
 					if ( ! class_exists( $class_name ) ) {
