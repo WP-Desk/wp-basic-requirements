@@ -204,7 +204,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 			return $this;
 		}
 
-        /**
+		/**
 		 * @param string $module_name
 		 * @param string $nice_name Nice module name for better looks in notice
 		 *
