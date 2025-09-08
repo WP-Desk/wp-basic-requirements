@@ -58,6 +58,9 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		/** @var array */
 		protected $plugin_require;
 
+		/** @var array */
+		protected $class_require;
+
 		/** @var bool */
 		protected $should_check_plugin_versions = false;
 
@@ -98,6 +101,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 			$this->module_require  = array();
 			$this->setting_require = array();
 			$this->notices         = array();
+			$this->class_require   = array();
 		}
 
 		/**
@@ -186,6 +190,21 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 		}
 
 		/**
+		 * Add a class to require list.
+		 *
+		 * @param string $class_name       Name of the class.
+		 * @param string $plugin_nice_name Nice plugin name for better looks in notice.
+		 *
+		 * @return $this
+		 *
+		 */
+		public function add_class_require( $class_name, $plugin_nice_name ) {
+			$this->class_require[$class_name] = $plugin_nice_name;
+
+			return $this;
+		}
+
+		/**
 		 * @param string $module_name
 		 * @param string $nice_name Nice module name for better looks in notice
 		 *
@@ -250,6 +269,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 			$notices = $this->append_plugin_require_notices( $notices );
 			$notices = $this->append_module_require_notices( $notices );
 			$notices = $this->append_settings_require_notices( $notices );
+			$notices = $this->append_class_require_notices( $notices );
 			if ( $this->should_check_plugin_versions ) {
 				$notices = $this->check_minimum_require_plugins_version_and_append_notices( $notices );
 			}
@@ -473,6 +493,30 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 						$notices[] = $notice;
 					}
 				}
+			}
+
+			return $notices;
+		}
+
+		/**
+		 * @param array $notices
+		 *
+		 * @return array
+		 */
+		private function append_class_require_notices( $notices ) {
+			foreach ( $this->class_require as $class_name => $plugin_nice_name ) {
+				if ( class_exists( $class_name ) ) {
+					continue;
+				}
+
+				$notices[] = $this->prepare_notice_message(
+					sprintf(
+						__( 'The &#8220;%s&#8221; plugin cannot run without %s active. Please install and activate %s plugin.', 'wp-basic-requirements' ),
+						esc_html( $this->plugin_name ),
+						esc_html( $plugin_nice_name ),
+						esc_html( $plugin_nice_name )
+					)
+				);
 			}
 
 			return $notices;
