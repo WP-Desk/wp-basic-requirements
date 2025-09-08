@@ -1,3 +1,7 @@
+## [3.8.0] - 2025-09-08
+### Added
+- Class existence requirements
+
 ## [3.7.2] - 2025-08-25
 ### Fixed
 - Plugin slug for a repository install link

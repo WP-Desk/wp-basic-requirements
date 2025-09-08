@@ -64,6 +64,12 @@
 				}
 			}
 
+            if ( isset( $requirements['class_names'] ) && is_array( $requirements['class_names'] ) ) {
+                foreach ( $requirements['class_names'] as $requirement ) {
+                    $requirements_checker->add_class_require( $requirement['class_name'], $requirement['plugin_nice_name'] );
+                }
+            }
+
 			if ( isset( $requirements['modules'] ) ) {
 				foreach ( $requirements['modules'] as $requirement ) {
 					$requirements_checker->add_php_module_require( $requirement['name'], $requirement['nice_name'] );
