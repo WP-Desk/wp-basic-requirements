@@ -498,29 +498,29 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 			return $notices;
 		}
 
-        /**
-         * @param array $notices
-         *
-         * @return array
-         */
+		/**
+		 * @param array $notices
+		 *
+		 * @return array
+		 */
         private function append_class_require_notices( $notices ) {
-            if ( count( $this->class_require ) > 0 ) {
-                foreach ( $this->class_require as $class_name => $plugin_nice_name ) {
-                    if ( ! class_exists( $class_name ) ) {
-                        $notices[] = $this->prepare_notice_message(
-                            sprintf(
-                                __( 'The &#8220;%s&#8221; plugin cannot run without %s active. Please install and activate %s plugin.', 'wp-basic-requirements' ),
-                                esc_html( $this->plugin_name ),
-                                esc_html( $plugin_nice_name ),
-                                esc_html( $plugin_nice_name )
-                            )
-                        );
-                    }
-                }
-            }
+			if ( count( $this->class_require ) > 0 ) {
+				foreach ( $this->class_require as $class_name => $plugin_nice_name ) {
+					if ( ! class_exists( $class_name ) ) {
+						$notices[] = $this->prepare_notice_message(
+							sprintf(
+								__( 'The &#8220;%s&#8221; plugin cannot run without %s active. Please install and activate %s plugin.', 'wp-basic-requirements' ),
+								esc_html( $this->plugin_name ),
+								esc_html( $plugin_nice_name ),
+								esc_html( $plugin_nice_name )
+							)
+						);
+					}
+				}
+			}
 
-            return $notices;
-        }
+			return $notices;
+		}
 
 		/**
 		 * Prepares WP install url and injects info about plugin to the WP update engine.
