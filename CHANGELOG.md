@@ -1,3 +1,7 @@
+## [3.8.1] - 2025-10-30
+### Removed
+- Translation on class existence requirement check: Function _load_textdomain_just_in_time was called incorrectly.
+
 ## [3.8.0] - 2025-09-08
 ### Added
 - Class existence requirements
@@ -25,7 +29,7 @@
 
 ## [3.6.1] - 2023-06-22
 ### Changed
-- Plugin info transient changed to auto loaded option 
+- Plugin info transient changed to auto loaded option
 
 ## [3.5.2] - 2023-02-10
 ### Changed
@@ -38,7 +42,7 @@
 ## [3.5.0] - 2022-08-16
 ### Added
 - en_CA, en_GB translators
- 
+
 ## [3.4.0] - 2022-08-16
 ### Added
 - de_DE translators
@@ -65,7 +69,7 @@
 
 ## [3.2.4] - 2021-02-26
 ### Fixed
-- removed plugin version from plugin api 
+- removed plugin version from plugin api
 
 ## [3.2.3] - 2020-10-05
 ### Fixed
