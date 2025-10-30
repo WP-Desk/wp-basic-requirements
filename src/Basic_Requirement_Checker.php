@@ -511,7 +511,7 @@ if ( ! class_exists( 'WPDesk_Basic_Requirement_Checker' ) ) {
 
 				$notices[] = $this->prepare_notice_message(
 					sprintf(
-						__( 'The &#8220;%s&#8221; plugin cannot run without %s active. Please install and activate %s plugin.', 'wp-basic-requirements' ),
+						'The &#8220;%s&#8221; plugin cannot run without %s active. Please install and activate %s plugin.',
 						esc_html( $this->plugin_name ),
 						esc_html( $plugin_nice_name ),
 						esc_html( $plugin_nice_name )
