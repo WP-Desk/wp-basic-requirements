@@ -176,9 +176,9 @@
 			$requirements->handle_render_notices_action();
 		}
 		
-		public function test_add_plugin_repository_require_checks_for_activation_and_installs() {
-			$random_version                = "1.0";
-			$activated_plugin_name         = 'WooCommerce';
+	public function test_add_plugin_repository_require_checks_for_activation_and_installs() {
+		$random_version                = "1.0";
+		$activated_plugin_name         = 'WooCommerce';
 			$not_activated_plugin_name     = "some_other";
 			$not_installed_plugin_name     = "not_installed";
 			$installed_plugin_names        = array( $activated_plugin_name, $not_activated_plugin_name );
@@ -215,10 +215,50 @@
 			$this->expectOutputRegex( "/Activate $not_activated_plugin_name/" );
 			$requirements->handle_render_notices_action();
 			
-			$requirements->add_plugin_repository_require( $not_installed_plugin_name, $random_version );
-			$this->expectOutputRegex( "/Install $not_installed_plugin_name/" );
-			$this->assertFalse( $requirements->are_requirements_met(),
-				"Should NOT be met - uninstalled and unactive plugins are required" );
-			$requirements->handle_render_notices_action();
-		}
+		$requirements->add_plugin_repository_require( $not_installed_plugin_name, $random_version );
+		$this->expectOutputRegex( "/Install $not_installed_plugin_name/" );
+		$this->assertFalse( $requirements->are_requirements_met(),
+			"Should NOT be met - uninstalled and unactive plugins are required" );
+		$requirements->handle_render_notices_action();
 	}
+
+	public function test_plugin_version_equal_to_required_is_valid() {
+		$plugin_file    = 'woocommerce/woocommerce.php';
+		$plugin_version = '1.7.1';
+
+		WP_Mock::wpFunction( 'is_multisite' )
+		       ->andReturn( false );
+
+		WP_Mock::wpFunction( 'get_option' )
+		       ->withArgs( array( 'active_plugins', array() ) )
+		       ->andReturn( array( $plugin_file ) );
+
+		WP_Mock::wpFunction( 'get_option' )
+		       ->withArgs( array( WPDesk_Basic_Requirement_Checker::PLUGIN_INFO_TRANSIENT_NAME ) )
+		       ->andReturn( false );
+
+		WP_Mock::wpFunction( 'get_plugins' )
+		       ->andReturn( array(
+			       $plugin_file => array(
+				       'Name'    => 'WooCommerce',
+				       'Version' => $plugin_version,
+			       ),
+		       ) );
+
+		WP_Mock::wpFunction( 'update_option' )
+		       ->andReturn( true );
+
+		$requirements = new WPDesk_Basic_Requirement_Checker(
+			self::RANDOM_PLUGIN_FILE,
+			self::RANDOM_PLUGIN_NAME,
+			self::RANDOM_PLUGIN_TEXTDOMAIN,
+			self::ALWAYS_VALID_PHP_VERSION,
+			self::ALWAYS_VALID_WP_VERSION,
+			false
+		);
+
+		$requirements->add_plugin_require( $plugin_file, null, $plugin_version );
+		$this->assertTrue( $requirements->are_requirements_met(),
+			'Plugin version equal to required should be accepted' );
+	}
+}

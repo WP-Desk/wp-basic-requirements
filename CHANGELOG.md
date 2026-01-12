@@ -1,3 +1,8 @@
+## [3.8.2] - 2026-01-12
+### Fixed
+- Plugin version checks accept equal required versions.
+- Avoid null/empty values passed to version_compare.
+
 ## [3.8.1] - 2025-10-30
 ### Removed
 - Translation on class existence requirement check: Function _load_textdomain_just_in_time was called incorrectly.
