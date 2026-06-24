@@ -1,10 +1,15 @@
 {
     "name": "wpdesk/wp-basic-requirements",
+    "license": "MIT",
     "authors": [
-        {
-            "name": "Krzysiek",
-            "email": "krzysiek@wpdesk.pl"
-        }
+      {
+        "name": "WP Desk",
+        "homepage": "https://wpdesk.net"
+      },
+      {
+        "name": "Octolize",
+        "homepage": "https://octolize.com"
+      }
     ],
     "require": {
         "php": ">=5.3"
