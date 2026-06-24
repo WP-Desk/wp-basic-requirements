@@ -7,22 +7,20 @@
 
 # WP Basic Requirements
 
-wp-basic-requirements is a simple library for WordPress plugins allowing to verify if the target environment meets the defined requirements. If not, it can be also used to display the notice to the users containing the proper information.
+`wp-basic-requirements` is a small library for WordPress plugins that checks whether the environment meets defined requirements and can display an admin notice when it does not.
 
-The library has to be compatible with PHP 5.2.x since it's the oldest acceptable version for WordPress to be run.
+It supports checks for:
 
-Available requirements to be defined:
-
-- Minimal PHP version
-- Minimal WordPress version
-- Minimal WooCommerce version
-- Required PHP module
-- Required PHP setting
-- OpenSSL version
+- minimum PHP version
+- minimum WordPress version
+- required plugins
+- required repository plugins
+- required classes
+- required PHP modules
 
 ## Requirements
 
-PHP 5.2 or later.
+PHP 5.3 or later.
 
 ## Installation via Composer
 
@@ -34,7 +32,7 @@ composer require wpdesk/wp-basic-requirements
 
 ## Example usage
 
-Use the following code in WordPress plugin's main .php file: 
+Use the following code in the main plugin file:
 
 ```php
 <?php
@@ -49,6 +47,7 @@ $requirements_checker = ( new WPDesk_Basic_Requirement_Checker_Factory )->create
             [
                 'name'      => 'woocommerce/woocommerce.php',
                 'nice_name' => 'WooCommerce',
+                'version'   => '8.0',
             ],
         ],
     ]
